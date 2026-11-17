@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casa Oliveira · Curadoria imobiliária de alto padrão em Florianópolis</title>
+<meta name="description" content="Curadoria imobiliária de alto padrão em Florianópolis. Mãe e filho conduzindo compra, venda, construção e locação do início ao fim. De família para família.">
+<link rel="canonical" href="https://casaoliveira.site/">
+<meta name="theme-color" content="#F2F0EB">
+
+<!-- Prévia ao compartilhar o link (WhatsApp, Instagram, Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Casa Oliveira">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:url" content="https://casaoliveira.site/">
+<meta property="og:title" content="Casa Oliveira · Curadoria imobiliária">
+<meta property="og:description" content="Você não precisa falar com dez corretores. Curadoria imobiliária de alto padrão em Florianópolis, de família para família.">
+<meta property="og:image" content="https://casaoliveira.site/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Jost:wght@300;400&display=swap">
+<link rel="preload" as="image" href="assets/hero.jpg">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "name": "Casa Oliveira",
+  "description": "Curadoria imobiliária de alto padrão em Florianópolis.",
+  "url": "https://casaoliveira.site/",
+  "logo": "https://casaoliveira.site/assets/logo.png",
+  "image": "https://casaoliveira.site/assets/og.jpg",
+  "telephone": "+55 48 99222-8009",
+  "areaServed": ["Florianópolis", "Santa Catarina"],
+  "address": { "@type": "PostalAddress", "addressLocality": "Florianópolis", "addressRegion": "SC", "addressCountry": "BR" },
+  "sameAs": ["https://www.instagram.com/casaoliveiracuradoria/"]
+}
+</script>
+
+<style>
+/* ============================================================
+   CASA OLIVEIRA · LP
+   Régua: espaço 4·8·12·16·24·28·40·72 · margem 20 · seções 72
+   Cantos: 24 blocos · 16 controles · 999 botões · botões 56 de altura
+   Tipo: Cormorant Garamond 400 (títulos) · Jost 300 (texto) · Jost 400 (rótulos)
+   ============================================================ */
+:root{
+  --creme:#F2F0EB; --verde:#3E4A36; --verde-esc:#111F0E; --marrom:#3B2C20; --marrom-cl:#6A5745;
+  --linha:#D6D0C2; --linha-cl:#E6E1D6; --nevoa:#D9D5C9; --verde-linha:#6B7563; --papel:#FFFFFF;
+  --serif:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans:'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--creme);color:var(--verde-esc);font-family:var(--sans);font-weight:300;font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+img,video{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+a:focus-visible,button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--marrom-cl);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+main{max-width:520px;margin:0 auto;padding-bottom:96px}
+.wrap{padding:0 20px}
+.sec{margin-top:72px}
+
+/* tipografia */
+.t-h1{font-family:var(--serif);font-weight:400;font-size:38px;line-height:1.1}
+.t-h2{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.12}
+.t-h3{font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.2}
+.t-body{font-size:15px;line-height:1.7;color:var(--marrom)}
+.t-small{font-size:13px;line-height:1.6;color:var(--marrom-cl)}
+.t-label{font-size:11px;line-height:1;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--marrom-cl)}
+.eyebrow{display:block;margin-bottom:12px}
+.lead{margin-top:16px}
+
+/* botões */
+.btn{height:56px;width:100%;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:11px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;transition:opacity .2s, transform .2s}
+.btn:active{transform:scale(.99)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-verde{background:var(--verde);color:var(--creme)}
+.btn-creme{background:var(--creme);color:var(--verde-esc)}
+.btn-linha{border:1px solid var(--verde);color:var(--verde)}
+@media (hover:hover){.btn:hover{opacity:.88}}
+
+/* topo */
+.lang{display:flex;justify-content:flex-end;padding:12px 20px 0}
+.lang button{height:44px;min-width:36px;padding:0 6px;font-size:11px;letter-spacing:.22em;color:var(--marrom-cl)}
+.lang button[aria-pressed="true"]{color:var(--verde-esc);font-weight:400;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:5px}
+.hero{text-align:center;display:flex;flex-direction:column;align-items:center}
+.logo{width:220px;max-width:64%;height:auto;margin-top:12px}
+.media{position:relative;overflow:hidden;background:#CFC8B8}
+.media video,.media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero .media{margin-top:28px;width:100%;aspect-ratio:4/3;border-radius:24px}
+.chip{position:absolute;height:32px;padding:0 16px;border-radius:999px;display:flex;align-items:center;font-size:11px;font-weight:400;letter-spacing:.04em;white-space:nowrap}
+.hero .chip{left:16px;bottom:16px;background:rgba(242,240,235,.94);color:var(--verde)}
+.hero h1{margin-top:40px;max-width:420px}
+.hero .lead{max-width:400px}
+.hero .btn{margin-top:28px}
+.hero .t-small{margin-top:12px}
+
+/* prova */
+.stats{border-top:1px solid var(--linha)}
+.stat{height:80px;border-bottom:1px solid var(--linha);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.stat b{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1;color:var(--verde);white-space:nowrap}
+.stat span{font-size:13px;line-height:1.5;color:var(--marrom);text-align:right}
+
+/* quiz */
+.quiz{margin:72px 20px 0;padding:28px;border-radius:24px;background:var(--verde);color:var(--creme);scroll-margin-top:24px}
+.quiz .t-label{color:var(--nevoa)}
+.progress{margin-top:28px;display:flex;align-items:center;gap:12px}
+.segs{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.segs i{height:2px;background:var(--verde-linha);transition:background .3s}
+.segs i.on{background:var(--creme)}
+.progress span{font-size:13px;color:var(--nevoa);white-space:nowrap}
+.quiz .t-h3{margin-top:24px}
+.opts{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.opt{height:56px;padding:0 20px;border-radius:16px;border:1px solid var(--verde-linha);text-align:left;font-size:15px;font-weight:300;color:var(--creme);transition:background .2s,border-color .2s}
+.opt[aria-pressed="true"]{background:var(--creme);border-color:var(--creme);color:var(--verde-esc);font-weight:400}
+@media (hover:hover){.opt:hover{border-color:var(--creme)}}
+.link{height:44px;font-size:13px;color:var(--nevoa);text-decoration:underline;text-underline-offset:4px}
+.back{margin-top:12px}
+.summary{margin-top:28px;padding:16px 20px;border-radius:16px;background:rgba(242,240,235,.08);display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.5}
+.summary div{display:flex;justify-content:space-between;gap:16px}
+.summary dt{color:var(--nevoa)} .summary dd{margin:0;font-weight:400;text-align:right}
+.field{margin-top:24px;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.5;font-weight:400}
+.field input{height:56px;padding:0 20px;border-radius:16px;border:1px solid var(--verde-linha);background:var(--creme);color:var(--verde-esc);font:300 16px var(--sans)}
+.quiz .btn{margin-top:16px}
+.note{margin-top:12px;text-align:center}
+.quiz .note{color:var(--nevoa)}
+.done{display:flex;flex-direction:column}
+.done .link{align-self:center;margin-top:4px}
+
+/* vitrine */
+.trilho{margin-top:24px;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:20px;padding:0 20px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.trilho::-webkit-scrollbar{display:none}
+.card{flex:0 0 86%;max-width:420px;scroll-snap-align:start;border-radius:24px;overflow:hidden;background:var(--papel);display:flex;flex-direction:column}
+.card .media{aspect-ratio:4/5}
+.card .chip{top:16px;right:16px;background:var(--verde);color:var(--creme)}
+.card-body{flex:1;padding:28px;display:flex;flex-direction:column}
+.card-body .t-label{line-height:1.5}
+.card-body h3{margin-top:12px;font-size:26px;line-height:1.15}
+.card-body .t-body{margin-top:12px}
+.facts{margin-top:24px;border-top:1px solid var(--linha-cl)}
+.facts div{min-height:48px;border-bottom:1px solid var(--linha-cl);display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;line-height:1.5}
+.facts dt{font-weight:400} .facts dd{margin:0;color:var(--marrom-cl);text-align:right}
+.bar{margin-top:12px;height:4px;border-radius:2px;background:var(--linha-cl);overflow:hidden}
+.bar i{display:block;height:4px;width:46%;background:var(--verde)}
+.spacer{flex:1;min-height:28px}
+.car-nav{margin-top:8px;display:flex;align-items:center;justify-content:center}
+.dots{display:flex}
+.dots button{width:36px;height:44px;display:flex;align-items:center;justify-content:center}
+.dots i{display:block;width:6px;height:6px;border-radius:3px;background:#CFC8B8;transition:width .3s,background .3s}
+.dots button[aria-current="true"] i{width:24px;background:var(--verde)}
+.arrow{display:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--linha);align-items:center;justify-content:center;color:var(--verde)}
+.arrow svg{width:16px;height:16px}
+.arrow:disabled{opacity:.35;cursor:default}
+@media (hover:hover) and (pointer:fine){.arrow{display:flex}}
+.more{margin-top:16px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.more .t-h3{color:var(--verde)}
+.more a{margin-top:4px;height:44px;display:flex;align-items:center;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--verde);text-decoration:underline;text-underline-offset:6px}
+
+/* passos */
+.steps{margin:28px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:24px}
+.steps li{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:16px}
+.num{width:40px;height:40px;border-radius:50%;border:1px solid var(--verde);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:18px;color:var(--verde)}
+.steps li div{padding-top:6px;display:flex;flex-direction:column;gap:4px}
+
+/* lista */
+.box{margin:72px 20px 0;padding:28px;border-radius:24px;border:1px solid var(--verde)}
+.box .btn{margin-top:28px}
+
+/* quem */
+.foto{margin-top:24px;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;object-position:center 100%;border-radius:24px;background:#CFC8B8}
+.quem .t-body{margin-top:24px}
+.motto{margin-top:16px;color:var(--verde)}
+
+/* oliveira */
+.oliveira{text-align:center;padding:0 28px}
+.oliveira .rule{width:40px;height:1px;background:var(--linha);margin:0 auto 28px}
+
+/* fechamento */
+.close{margin:72px 20px 0;padding:40px 28px;border-radius:24px;background:var(--verde);color:var(--creme);text-align:center;display:flex;flex-direction:column;align-items:center}
+.close img{width:180px;max-width:56%;height:auto}
+.close .rule{width:40px;height:1px;background:var(--verde-linha);margin:28px 0}
+.close .btn{margin-top:28px}
+.close .t-small{margin-top:16px;color:var(--nevoa)}
+
+footer{padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:4px}
+footer nav{display:flex;gap:24px}
+footer nav a{height:44px;display:flex;align-items:center}
+footer .t-label{color:var(--verde-esc)}
+
+/* barra fixa */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(242,240,235,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--linha);transform:translateY(110%);transition:transform .35s ease}
+.dock.show{transform:none}
+.dock-in{max-width:520px;margin:0 auto;padding:12px 20px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px}
+.dock .wa{flex:none;width:56px;height:56px;border-radius:50%;border:1px solid var(--verde);display:flex;align-items:center;justify-content:center;color:var(--verde)}
+.dock .wa svg{width:22px;height:22px}
+@media (prefers-reduced-motion: reduce){.dock{transition:none}}
+</style>
+</head>
+<body>
+<main>
+
+  <div class="lang" role="group" aria-label="Idioma / Language">
+    <button type="button" data-lang="pt" aria-pressed="true" aria-label="Português">PT</button>
+    <button type="button" data-lang="en" aria-pressed="false" aria-label="English">EN</button>
+  </div>
+
+  <!-- 1. HERO -->
+  <header class="hero wrap">
+    <img class="logo" src="assets/logo.png" width="440" height="117" alt="Casa Oliveira, curadoria imobiliária" data-t-alt="logoAlt">
+    <div class="media">
+      <video data-src="assets/hero.mp4" poster="assets/hero.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
+      <span class="chip" data-t="badge">Ane &amp; Bernardo, mãe e filho</span>
+    </div>
+    <h1 class="t-h1"><span data-t="h1a">Você não precisa falar com </span><span data-t="h1b">dez corretores</span>.</h1>
+    <p class="t-body lead"><span data-t="lead1"></span> <span data-t="lead2"></span></p>
+    <a class="btn btn-verde" href="#curadoria" data-go-quiz id="hero-cta">
+      <span data-t="cta">Iniciar minha curadoria</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+    </a>
+    <p class="t-small" data-t="micro">3 perguntas. Menos de 1 minuto.</p>
+  </header>
+
+  <!-- 2. PROVA -->
+  <section class="sec wrap" data-t-aria="proofAria" aria-label="Credenciais">
+    <div class="stats">
+      <div class="stat"><b data-t="s1n"></b><span data-t="s1l"></span></div>
+      <div class="stat"><b data-t="s2n"></b><span data-t="s2l"></span></div>
+      <div class="stat"><b data-t="s3n"></b><span data-t="s3l"></span></div>
+    </div>
+  </section>
+
+  <!-- 3. QUIZ -->
+  <section class="quiz" id="curadoria" aria-labelledby="quiz-titulo">
+    <span class="t-label eyebrow" data-t="qEyebrow"></span>
+    <h2 class="t-h2" id="quiz-titulo" data-t="qTitle"></h2>
+    <div id="quiz-body" aria-live="polite"></div>
+  </section>
+
+  <!-- 4. VITRINE -->
+  <section class="sec" aria-labelledby="vitrine">
+    <div class="wrap">
+      <span class="t-label eyebrow" data-t="vEyebrow"></span>
+      <h2 class="t-h2" id="vitrine" data-t="vTitle"></h2>
+      <p class="t-body lead" data-t="vText"></p>
+    </div>
+    <div class="trilho" id="trilho" tabindex="0" data-t-aria="vAria" aria-label="Empreendimentos"></div>
+    <div class="car-nav">
+      <button type="button" class="arrow" id="prev" data-t-aria="prev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <div class="dots" id="dots"></div>
+      <button type="button" class="arrow" id="next" data-t-aria="next" aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="more wrap">
+      <p class="t-h3" data-t="vMore"></p>
+      <a href="#" target="_blank" rel="noopener" data-wa="waLista" data-track="lista_vitrine" data-t="vMoreLink"></a>
+    </div>
+  </section>
+
+  <!-- 5. COMO FUNCIONA -->
+  <section class="sec wrap" aria-labelledby="como">
+    <span class="t-label eyebrow" data-t="cEyebrow"></span>
+    <h2 class="t-h2" id="como" data-t="cTitle"></h2>
+    <ol class="steps">
+      <li><span class="num">1</span><div><h3 class="t-h3" data-t="st1h"></h3><p class="t-body" data-t="st1p"></p></div></li>
+      <li><span class="num">2</span><div><h3 class="t-h3" data-t="st2h"></h3><p class="t-body" data-t="st2p"></p></div></li>
+      <li><span class="num">3</span><div><h3 class="t-h3" data-t="st3h"></h3><p class="t-body" data-t="st3p"></p></div></li>
+    </ol>
+  </section>
+
+  <!-- 6. LISTA RESERVADA -->
+  <section class="box" aria-labelledby="lista">
+    <span class="t-label eyebrow" data-t="lEyebrow"></span>
+    <h2 class="t-h2" id="lista" data-t="lTitle"></h2>
+    <p class="t-body lead" data-t="lText"></p>
+    <a class="btn btn-linha" href="#" target="_blank" rel="noopener" data-wa="waLista" data-track="lista" data-t="lCta"></a>
+  </section>
+
+  <!-- 7. QUEM CONDUZ -->
+  <section class="sec wrap quem" aria-labelledby="quem">
+    <span class="t-label eyebrow" data-t="wEyebrow"></span>
+    <h2 class="t-h2" id="quem" data-t="wTitle"></h2>
+    <img class="foto" src="assets/ane-bernardo.jpg" width="1080" height="1350" loading="lazy" decoding="async" alt="" data-t-alt="photoAlt">
+    <p class="t-body" data-t="wText"></p>
+    <p class="t-h3 motto" data-t="motto"></p>
+  </section>
+
+  <!-- 8. POR QUE OLIVEIRA -->
+  <section class="sec oliveira" aria-labelledby="oliveira">
+    <div class="rule" aria-hidden="true"></div>
+    <span class="t-label eyebrow" data-t="oEyebrow"></span>
+    <h2 class="t-h2" id="oliveira" data-t="oTitle"></h2>
+    <p class="t-body lead" data-t="oText"></p>
+  </section>
+
+  <!-- 9. FECHAMENTO -->
+  <section class="close">
+    <img src="assets/logo-creme.png" width="360" height="96" loading="lazy" alt="Casa Oliveira">
+    <div class="rule" aria-hidden="true"></div>
+    <p class="t-h2" data-t="fTitle"></p>
+    <a class="btn btn-creme" href="#curadoria" data-go-quiz data-t="cta"></a>
+    <p class="t-small">Ane &amp; Bernardo, Casa Oliveira</p>
+  </section>
+
+  <footer>
+    <nav data-t-aria="socialAria" aria-label="Redes">
+      <a class="t-label" href="https://www.instagram.com/casaoliveiracuradoria/" target="_blank" rel="noopener">Instagram</a>
+      <a class="t-label" href="#" target="_blank" rel="noopener" data-wa="waHello" data-track="whatsapp_rodape">WhatsApp</a>
+    </nav>
+    <p class="t-small" data-t="city"></p>
+  </footer>
+</main>
+
+<!-- BARRA FIXA: aparece depois do topo e some quando o formulário está na tela -->
+<div class="dock" id="dock">
+  <div class="dock-in">
+    <a class="btn btn-verde" href="#curadoria" data-go-quiz data-t="cta"></a>
+    <a class="wa" href="#" target="_blank" rel="noopener" data-wa="waHello" data-track="whatsapp_barra" data-t-aria="waAria" aria-label="Falar no WhatsApp">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>
+    </a>
+  </div>
+</div>
+
+<noscript><p style="text-align:center;padding:20px"><a href="https://wa.me/5548992228009">Fale com a Casa Oliveira no WhatsApp</a></p></noscript>
+
+<script>
+(function () {
+'use strict';
+
+/* ================= CONFIGURAÇÃO =================
+   Preencha os IDs para ativar o rastreamento. Vazio = desligado. */
+var CONFIG = {
+  whatsapp: '5548992228009',
+  metaPixelId: '',   // ex.: '123456789012345'
+  ga4Id: ''          // ex.: 'G-XXXXXXXXXX'
+};
+
+/* ================= TEXTOS: [português, inglês] ================= */
+var D = {
+  logoAlt: ['Casa Oliveira, curadoria imobiliária', 'Casa Oliveira, real estate curation'],
+  badge: ['Ane & Bernardo, mãe e filho', 'Ane & Bernardo, mother and son'],
+  h1a: ['Você não precisa falar com ', "You don't need to talk to "],
+  h1b: ['dez corretores', 'ten brokers'],
+  lead1: ['Somos uma curadoria imobiliária de alto padrão em Florianópolis.', 'We are a high-end real estate curation house in Florianópolis, Brazil.'],
+  lead2: ['Nascemos para ser a casa de confiança que nossos clientes acionam quando precisam tomar uma grande decisão imobiliária: comprar, vender, construir ou alugar.', 'We exist to be the trusted house our clients call when they face a major real estate decision: buying, selling, building or renting.'],
+  cta: ['Iniciar minha curadoria', 'Start your curation'],
+  micro: ['3 perguntas. Menos de 1 minuto.', '3 questions. Under a minute.'],
+  proofAria: ['Credenciais', 'Credentials'],
+  s1n: ['16+ anos', '16+ years'], s1l: ['no mercado imobiliário', 'in the real estate market'],
+  s2n: ['2 gerações', '2 generations'], s2l: ['um sobrenome em jogo', 'one family name at stake'],
+  s3n: ['+R$ 100 mi', 'R$ 100M+'], s3l: ['movimentados nos últimos anos', 'in transactions in recent years'],
+  qEyebrow: ['Inicie sua curadoria', 'Start your curation'],
+  qTitle: ['Conte o seu momento. A gente responde pessoalmente.', 'Tell us where you are. We reply personally.'],
+  of: ['de', 'of'], back: ['Voltar', 'Back'],
+  nameLabel: ['Como podemos te chamar?', 'What should we call you?'],
+  namePh: ['Seu nome', 'Your name'],
+  send: ['Enviar para Ane & Bernardo', 'Send to Ane & Bernardo'],
+  sendNote: ['Abre o WhatsApp com suas respostas prontas. Quem responde somos nós, não um robô.', "Opens WhatsApp with your answers ready. You'll hear from us, not a bot."],
+  redo: ['Refazer respostas', 'Start over'],
+  vEyebrow: ['Nossas parcerias', 'Our partners'],
+  vTitle: ['As oportunidades chegam antes para nós.', 'Opportunities reach us first.'],
+  vText: ['Trabalhamos lado a lado com as incorporadoras mais respeitadas de Santa Catarina. Elas nos chamam antes do mercado, e quem caminha com a gente vê primeiro. Estas são algumas delas.', "We work side by side with Santa Catarina's most respected developers. They call us before the market, and those who walk with us see it first. Here are a few of them."],
+  vAria: ['Empreendimentos', 'Developments'],
+  vDot: ['Ver empreendimento ', 'Show development '],
+  prev: ['Anterior', 'Previous'], next: ['Próximo', 'Next'],
+  vMore: ['Muitas oportunidades nunca chegam ao Instagram.', 'Many opportunities never make it to Instagram.'],
+  vMoreLink: ['Quero ver primeiro', 'I want to see them first'],
+  cEyebrow: ['Como funciona', 'How it works'],
+  cTitle: ['Um único ponto de confiança, da primeira conversa à confiança.', 'One trusted point of contact, from the first conversation to the keys.'],
+  st1h: ['Um café', 'A coffee'],
+  st1p: ['Entendemos o seu momento antes de mostrar qualquer imóvel.', 'We understand where you are before showing any property.'],
+  st2h: ['A curadoria', 'The curation'],
+  st2p: ['Buscamos no mercado o que você precisa para encontrar o imóvel ou a parceria ideal.', 'We search the market for what you need to find the right property or partnership.'],
+  st3h: ['Do início ao fim', 'From start to finish'],
+  st3p: ['Visitas, negociação, documentação e, se for construir ou decorar, a obra.', 'Visits, negotiation, paperwork and, if you are building or decorating, the work itself.'],
+  lEyebrow: ['Ainda pesquisando?', 'Still exploring?'],
+  lTitle: ['Entre na nossa lista reservada de pré-lançamentos.', 'Join our private pre-launch list.'],
+  lText: ['As construtoras nos convidam antes do mercado. Quem está na lista conhece junto com a gente. Poucas mensagens, só quando valer.', 'Developers invite us before the market. Those on the list see it with us. Few messages, only when it matters.'],
+  lCta: ['Quero entrar na lista', 'Join the list'],
+  wEyebrow: ['Quem conduz', 'Who leads'],
+  wTitle: ['Não vivemos de comissão por venda. Vivemos de relações que duram décadas.', "We don't live on sales commissions. We live on relationships that last decades."],
+  photoAlt: ['Bernardo e Ane Oliveira sentados lado a lado em um sofá claro', 'Bernardo and Ane Oliveira sitting side by side on a light sofa'],
+  wText: ['Por isso conseguimos dizer “não”. Não trabalhamos com todos. Escolhemos com quem caminhamos.', "That is why we can say “no.” We don't work with everyone. We choose who we walk with."],
+  motto: ['De família para família.', 'From family to family.'],
+  oEyebrow: ['Por que Oliveira', 'Why Oliveira'],
+  oTitle: ['A oliveira vive séculos. E fica mais bonita com o tempo.', 'The olive tree lives for centuries. And grows more beautiful with time.'],
+  oText: ['É assim que pensamos patrimônio. Raízes que sustentam, galhos que crescem, a mesma árvore passando de uma geração para a outra. Cuidar do que dura.', 'That is how we think about wealth. Roots that hold, branches that grow, the same tree passed from one generation to the next. Caring for what lasts.'],
+  fTitle: ['Seja qual for a sua próxima decisão imobiliária, a gente cuida do caminho.', 'Whatever your next real estate decision, we take care of the path.'],
+  socialAria: ['Redes', 'Social'],
+  city: ['Florianópolis, SC', 'Florianópolis, Brazil'],
+  waAria: ['Falar no WhatsApp', 'Chat on WhatsApp'],
+  waHello: ['Olá, família, tudo bem?', 'Hello, Casa Oliveira.'],
+  waLista: ['Olá, família. Quero entrar na lista reservada de pré-lançamentos da Casa Oliveira.', 'Hello. I would like to join the Casa Oliveira private pre-launch list.'],
+  mHi: ['Olá, família. ', 'Hello. '], mIam: ['Sou ', "I'm "],
+  mStart: ['Quero iniciar minha curadoria.', 'I would like to start my curation.'],
+  srcIg: ['Vim pelo Instagram.', 'I found you on Instagram.'],
+  srcAd: ['Vim pelo anúncio.', 'I came from your ad.'],
+  srcSite: ['Vim pelo site.', 'I came from your website.'],
+  kWant: ['Quero', 'I want'], kInterest: ['Interesse', 'Interest'], kType: ['Tipo de imóvel', 'Property type'], kRef: ['Imóvel', 'Property'],
+  refSeen: ['Qual imóvel você viu?', 'Which property did you see?'],
+  refDev: ['Qual empreendimento?', 'Which development?'],
+  refWhere: ['Onde fica o imóvel?', 'Where is the property?'],
+  phSeen: ['Nome, bairro ou o que lembrar', 'Name, neighborhood or anything you recall'],
+  phWhere: ['Bairro ou condomínio', 'Neighborhood or condominium']
+};
+
+/* ================= FORMULÁRIO ================= */
+var S1 = { q: ['Como podemos te ajudar?', 'How can we help?'], opts: [
+  { id: 'comprar', l: ['Comprar um imóvel', 'Buy a property'] },
+  { id: 'vender', l: ['Vender meu imóvel', 'Sell my property'] },
+  { id: 'investir', l: ['Investir em imóveis', 'Invest in real estate'] },
+  { id: 'cuidar', l: ['Obra, móveis ou administração', 'Construction, furnishing or management'] },
+  { id: 'conhecer', l: ['Conhecer as oportunidades', 'Explore opportunities'] }
+] };
+var S2 = {
+  comprar: { q: ['O que você procura?', 'What are you looking for?'], opts: [
+    { id: 'sonho', l: ['A casa dos sonhos para morar', 'My dream home to live in'] },
+    { id: 'anuncio', l: ['Um imóvel que vi anunciado', 'A property I saw advertised'] },
+    { id: 'empreend', l: ['Um apartamento que vocês postaram', 'An apartment you posted'] },
+    { id: 'serra', l: ['Um lote na serra catarinense', 'A lot in the Santa Catarina highlands'] } ] },
+  vender: { q: ['Qual é o imóvel?', 'What type of property?'], opts: [
+    { id: 'v_casa', l: ['Casa', 'House'] },
+    { id: 'v_apto', l: ['Apartamento', 'Apartment'] },
+    { id: 'v_terreno', l: ['Terreno ou lote', 'Land or lot'] },
+    { id: 'v_comercial', l: ['Imóvel comercial', 'Commercial property'] } ] },
+  investir: { q: ['Qual investimento faz sentido para você?', 'Which investment makes sense for you?'], opts: [
+    { id: 'renda', l: ['Imóvel para renda ou valorização', 'Property for income or appreciation'] },
+    { id: 'prelanc', l: ['Pré-lançamento antes do mercado', 'Pre-launch, before the market'] },
+    { id: 'galpao', l: ['Terreno para galpão ou comércio', 'Land for a warehouse or commercial use'] },
+    { id: 'serra', l: ['Lotes na serra catarinense', 'Lots in the Santa Catarina highlands'] } ] },
+  cuidar: { q: ['Do que você precisa?', 'What do you need?'], opts: [
+    { id: 'obra', l: ['Administração de obra', 'Construction management'] },
+    { id: 'mobiliar', l: ['Mobiliar casa ou apartamento', 'Furnishing a house or apartment'] },
+    { id: 'locacao', l: ['Administrar imóveis alugados', 'Managing rented properties'] } ] },
+  conhecer: { q: ['O que mais te interessa?', 'What interests you most?'], opts: [
+    { id: 'prelanc', l: ['Pré-lançamentos', 'Pre-launches'] },
+    { id: 'prontos', l: ['Imóveis prontos de alto padrão', 'Ready high-end properties'] },
+    { id: 'serra', l: ['Lotes na serra catarinense', 'Lots in the Santa Catarina highlands'] },
+    { id: 'tudo', l: ['Um pouco de tudo', 'A bit of everything'] } ] }
+};
+var PRAZO = { q: ['Para quando?', 'When?'], k: ['Prazo', 'Timing'], opts: [
+  { id: 'p3', l: ['Nos próximos 3 meses', 'In the next 3 months'] },
+  { id: 'p12', l: ['Em até 1 ano', 'Within a year'] },
+  { id: 'pfree', l: ['Sem pressa, quero acompanhar', 'No rush, I want to follow along'] } ] };
+var PASSO = { q: ['Como você quer seguir?', 'How would you like to proceed?'], k: ['Próximo passo', 'Next step'], opts: [
+  { id: 'visita', l: ['Quero visitar', 'I want to visit'] },
+  { id: 'valores', l: ['Quero valores e condições', 'I want prices and terms'] },
+  { id: 'duvidas', l: ['Quero tirar dúvidas primeiro', 'I have questions first'] } ] };
+var VENDA = { q: ['Em que momento você está?', 'Where are you in the process?'], k: ['Momento', 'Status'], opts: [
+  { id: 'ja', l: ['Quero vender agora', 'I want to sell now'] },
+  { id: 'avaliar', l: ['Quero avaliar antes de decidir', 'I want a valuation before deciding'] },
+  { id: 'mercado', l: ['Quero entender o mercado', 'I want to understand the market'] } ] };
+var S3 = {
+  anuncio: PASSO, empreend: PASSO,
+  v_casa: VENDA, v_apto: VENDA, v_terreno: VENDA, v_comercial: VENDA,
+  obra: { q: ['Em que fase está a obra?', 'What stage is the project at?'], k: ['Fase', 'Stage'], opts: [
+    { id: 'terreno', l: ['Ainda no terreno', 'Still just the land'] },
+    { id: 'projeto', l: ['Projeto pronto', 'Design ready'] },
+    { id: 'andamento', l: ['Obra em andamento', 'Construction underway'] } ] },
+  mobiliar: { q: ['Em que momento está o imóvel?', 'What stage is the property at?'], k: ['Momento', 'Status'], opts: [
+    { id: 'planta', l: ['Na planta ou em obra', 'Off-plan or under construction'] },
+    { id: 'chaves', l: ['Recebendo as chaves', 'Getting the keys'] },
+    { id: 'morando', l: ['Já estou morando', 'Already living there'] } ] },
+  locacao: { q: ['Quantos imóveis são?', 'How many properties?'], k: ['Imóveis', 'Properties'], opts: [
+    { id: 'um', l: ['1 imóvel', '1 property'] },
+    { id: 'poucos', l: ['De 2 a 5', '2 to 5'] },
+    { id: 'muitos', l: ['Mais de 5', 'More than 5'] } ] }
+};
+
+/* ================= VITRINE ================= */
+var CARDS = [
+  { id: 'arcari', video: 'assets/arcari.mp4', poster: 'assets/arcari.jpg', bar: true,
+    badge: ['Venda exclusiva', 'Exclusive sale'],
+    where: ['Rancho Queimado · Serra catarinense', 'Rancho Queimado · Santa Catarina highlands'],
+    title: ['Estância Arcari', 'Estância Arcari'],
+    text: ['Condomínio de alto padrão na serra catarinense, a dez minutos do centro de Rancho Queimado. Araucárias, campo aberto e vista para as montanhas.', 'A high-end gated community in the Santa Catarina highlands, ten minutes from downtown Rancho Queimado. Araucaria pines, open fields and mountain views.'],
+    facts: [{ k: ['32 lotes', '32 lots'], v: ['quase metade já tem dono', 'almost half already sold'] }],
+    cta: ['Receber a apresentação', 'Get the presentation'],
+    note: ['Mapa de lotes disponíveis, implantação e condições.', 'Available lots map, site plan and terms.'],
+    wa: ['Olá, família. Quero receber a apresentação da Estância Arcari e saber quais lotes ainda estão disponíveis.', 'Hello. I would like to receive the Estância Arcari presentation and know which lots are still available.'],
+    alt: ['Paisagens da Estância Arcari: araucárias, campos e lagos na serra catarinense', 'Estância Arcari landscapes: araucaria pines, fields and lakes in the Santa Catarina highlands'] },
+  { id: 'oad', video: 'assets/makai.mp4', poster: 'assets/makai.jpg',
+    badge: ['Grupo OAD', 'Grupo OAD'],
+    where: ['Novo Campeche · Florianópolis', 'Novo Campeche · Florianópolis'],
+    title: ['Makai Beachfront', 'Makai Beachfront'],
+    text: ['Pé na areia no Novo Campeche, com paisagismo do escritório Burle Marx e compromisso lixo zero na obra. Somos os maiores vendedores da história do Grupo OAD.', 'Right on the sand in Novo Campeche, with landscaping by the Burle Marx studio and a zero-waste construction commitment. We are the top-selling brokers in Grupo OAD history.'],
+    facts: [{ k: ['406 apartamentos', '406 apartments'], v: ['estúdios, duplex e coberturas', 'studios, duplexes and penthouses'] },
+            { k: ['Entrega', 'Delivery'], v: ['prevista para 2027', 'expected in 2027'] }],
+    cta: ['Conhecer a OAD', 'Explore OAD'],
+    note: ['E os outros projetos do Grupo OAD no Sul da Ilha.', "Plus Grupo OAD's other projects in the South of the Island."],
+    wa: ['Olá, família. Quero conhecer o Makai Beachfront e os outros empreendimentos do Grupo OAD.', 'Hello. I would like to learn about Makai Beachfront and other Grupo OAD developments.'],
+    alt: ['Makai Beachfront: piscina e prédios de frente para o mar no Novo Campeche', 'Makai Beachfront: pool and buildings facing the sea in Novo Campeche'] },
+  { id: 'highlands', video: 'assets/highlands.mp4', poster: 'assets/highlands.jpg',
+    badge: ['Highlands Engenharia', 'Highlands Engenharia'],
+    where: ['Urubici · Serra catarinense', 'Urubici · Santa Catarina highlands'],
+    title: ['Highlands Vista', 'Highlands Vista'],
+    text: ['Condomínio fechado em terreno elevado, a 2 minutos do centro de Urubici. Só 19 lotes, com vista para a serra e mais de 6.100 m² de área verde.', 'A gated community on high ground, 2 minutes from downtown Urubici. Only 19 lots, with mountain views and over 6,100 m² of green space.'],
+    facts: [{ k: ['19 lotes', '19 lots'], v: ['de 420 a 635 m²', 'from 420 to 635 m²'] },
+            { k: ['Galpões', 'Warehouses'], v: ['e outros investimentos', 'and other investments'] }],
+    cta: ['Conhecer a Highlands', 'Explore Highlands'],
+    note: ['Lotes na serra e galpões para investimento.', 'Highland lots and warehouses for investment.'],
+    wa: ['Olá, família. Quero conhecer o Highlands Vista, em Urubici, e os outros investimentos da Highlands Engenharia.', 'Hello. I would like to learn about Highlands Vista in Urubici and other Highlands Engenharia investments.'],
+    alt: ['Highlands Vista: chegada, clube, implantação dos lotes e vista aérea com Urubici ao fundo', 'Highlands Vista: entrance, clubhouse, lot plan and aerial view with Urubici behind'] },
+  { id: 'ams', video: 'assets/ams.mp4', poster: 'assets/ams.jpg',
+    badge: ['AMS Empreendimentos', 'AMS Empreendimentos'],
+    where: ['Florianópolis', 'Florianópolis'],
+    title: ['Pininfarina, Arquitectonica e Porsche Consulting', 'Pininfarina, Arquitectonica and Porsche Consulting'],
+    text: ['Grifes globais de design, arquitetura e gestão, agora na ilha. A AMS tem mais de 25 anos de história em Florianópolis e traz esses nomes para os seus novos projetos.', 'Global names in design, architecture and management, now on the island. AMS has over 25 years in Florianópolis and brings these partners to its new projects.'],
+    facts: [{ k: ['25+ anos', '25+ years'], v: ['de história', 'in business'] },
+            { k: ['2.000+ unidades', '2,000+ units'], v: ['entregues', 'delivered'] }],
+    cta: ['Conhecer a AMS', 'Explore AMS'],
+    note: ['Lançamentos e pré-lançamentos apresentados por nós.', 'Launches and pre-launches presented by us.'],
+    wa: ['Olá, família. Quero conhecer os projetos da AMS Empreendimentos.', 'Hello. I would like to learn about AMS Empreendimentos projects.'],
+    alt: ['Projetos da AMS Empreendimentos em Florianópolis', 'AMS Empreendimentos projects in Florianópolis'] }
+];
+
+/* ================= ESTADO ================= */
+var LANG = 'pt';
+try {
+  var saved = localStorage.getItem('co_lang');
+  if (saved === 'pt' || saved === 'en') LANG = saved;
+  else if (String(navigator.language || '').slice(0, 2).toLowerCase() === 'en') LANG = 'en';
+} catch (e) {}
+var Q = { step: 0, a1: null, a2: null, a3: null, name: '', ref: '' };
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function L() { return LANG === 'en' ? 1 : 0; }
+function T(k) { var v = D[k]; return v ? v[L()] : ''; }
+function P(arr) { return arr[L()]; }
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+/* De onde a pessoa veio: muda a última linha da mensagem */
+var SOURCE = (function () {
+  var p = new URLSearchParams(location.search);
+  var src = (p.get('utm_source') || '').toLowerCase(), med = (p.get('utm_medium') || '').toLowerCase();
+  if (p.get('fbclid') && /paid|cpc|ads?/.test(med)) return 'ad';
+  if (/paid|cpc|ads?/.test(med) || p.get('gclid')) return 'ad';
+  if (/instagram|ig/.test(src) || /instagram\.com/.test(document.referrer) || /Instagram/.test(navigator.userAgent)) return 'ig';
+  return 'site';
+})();
+function sourceLine() { return T(SOURCE === 'ig' ? 'srcIg' : SOURCE === 'ad' ? 'srcAd' : 'srcSite'); }
+function wa(text) { return 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(text); }
+
+/* ================= RASTREAMENTO ================= */
+function track(name, extra) {
+  try {
+    if (window.fbq) fbq('track', name === 'quiz_enviado' ? 'Lead' : 'Contact', Object.assign({ content_name: name }, extra || {}));
+    if (window.gtag) gtag('event', name === 'quiz_enviado' ? 'generate_lead' : 'contact', Object.assign({ event_label: name }, extra || {}));
+  } catch (e) {}
+}
+(function loadTracking() {
+  if (CONFIG.metaPixelId) {
+    !function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) }; if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s) }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', CONFIG.metaPixelId); fbq('track', 'PageView');
+  }
+  if (CONFIG.ga4Id) {
+    var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + CONFIG.ga4Id; document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || []; window.gtag = function () { dataLayer.push(arguments); }; gtag('js', new Date()); gtag('config', CONFIG.ga4Id);
+  }
+})();
+
+/* ================= TEXTOS NA PÁGINA ================= */
+function applyText() {
+  document.documentElement.lang = LANG === 'en' ? 'en' : 'pt-BR';
+  $$('[data-t]').forEach(function (el) { el.textContent = T(el.getAttribute('data-t')); });
+  $$('[data-t-alt]').forEach(function (el) { el.alt = T(el.getAttribute('data-t-alt')); });
+  $$('[data-t-aria]').forEach(function (el) { el.setAttribute('aria-label', T(el.getAttribute('data-t-aria'))); });
+  $$('[data-wa]').forEach(function (el) {
+    var k = el.getAttribute('data-wa');
+    el.href = wa(k === 'waHello' ? T('waHello') + ' ' + sourceLine() : T(k));
+  });
+  $$('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-lang') === LANG ? 'true' : 'false'); });
+}
+
+/* ================= FORMULÁRIO ================= */
+function find(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return null; }
+function stage() {
+  var idx = Math.min(Q.step, 2);
+  var st2 = Q.a1 ? S2[Q.a1] : null;
+  var st3 = Q.a2 ? (S3[Q.a2] || PRAZO) : PRAZO;
+  return { idx: idx, st2: st2, st3: st3, cur: idx === 0 ? S1 : idx === 1 ? st2 : st3, key: ['a1', 'a2', 'a3'][idx] };
+}
+function summaryRows() {
+  var s = stage();
+  var o1 = Q.a1 ? find(S1.opts, Q.a1) : null, o2 = s.st2 && Q.a2 ? find(s.st2.opts, Q.a2) : null, o3 = Q.a3 ? find(s.st3.opts, Q.a3) : null;
+  return [
+    { k: T('kWant'), v: o1 ? P(o1.l) : '' },
+    { k: Q.a1 === 'vender' ? T('kType') : T('kInterest'), v: o2 ? P(o2.l) : '' },
+    { k: P(s.st3.k), v: o3 ? P(o3.l) : '' }
+  ];
+}
+function askRef() { return Q.a2 === 'anuncio' || Q.a2 === 'empreend' || Q.a1 === 'vender'; }
+function message() {
+  var name = Q.name.trim(), ref = Q.ref.trim();
+  return T('mHi') + (name ? T('mIam') + name + '. ' : '') + T('mStart') + '\n\n' +
+    summaryRows().map(function (r) { return r.k + ': ' + r.v; }).join('\n') +
+    (askRef() && ref ? '\n' + T('kRef') + ': ' + ref : '') + '\n\n' + sourceLine();
+}
+function renderQuiz(focus) {
+  var box = $('#quiz-body'), s = stage(), html;
+  if (Q.step < 3) {
+    html = '<div class="progress"><div class="segs" aria-hidden="true">' +
+      [0, 1, 2].map(function (i) { return '<i class="' + (i <= s.idx ? 'on' : '') + '"></i>'; }).join('') +
+      '</div><span>' + (s.idx + 1) + ' ' + esc(T('of')) + ' 3</span></div>' +
+      '<p class="t-h3" id="q-question" tabindex="-1">' + esc(P(s.cur.q)) + '</p>' +
+      '<div class="opts">' + s.cur.opts.map(function (o) {
+        return '<button type="button" class="opt" data-opt="' + o.id + '" aria-pressed="' + (Q[s.key] === o.id) + '">' + esc(P(o.l)) + '</button>';
+      }).join('') + '</div>' +
+      (Q.step > 0 ? '<button type="button" class="link back" data-back>' + esc(T('back')) + '</button>' : '');
+  } else {
+    var refLabel = Q.a1 === 'vender' ? T('refWhere') : Q.a2 === 'empreend' ? T('refDev') : T('refSeen');
+    var refPh = Q.a1 === 'vender' ? T('phWhere') : T('phSeen');
+    html = '<div class="done"><dl class="summary">' + summaryRows().map(function (r) {
+        return '<div><dt>' + esc(r.k) + '</dt><dd>' + esc(r.v) + '</dd></div>'; }).join('') + '</dl>' +
+      (askRef() ? '<label class="field">' + esc(refLabel) + '<input id="f-ref" type="text" placeholder="' + esc(refPh) + '" value="' + esc(Q.ref) + '"></label>' : '') +
+      '<label class="field">' + esc(T('nameLabel')) + '<input id="f-name" type="text" autocomplete="given-name" placeholder="' + esc(T('namePh')) + '" value="' + esc(Q.name) + '"></label>' +
+      '<a class="btn btn-creme" id="f-send" href="' + wa(message()) + '" target="_blank" rel="noopener">' + esc(T('send')) +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
+      '<p class="t-small note">' + esc(T('sendNote')) + '</p>' +
+      '<button type="button" class="link" data-restart>' + esc(T('redo')) + '</button></div>';
+  }
+  box.innerHTML = html;
+  if (focus) { var q = $('#q-question') || $('#f-ref') || $('#f-name'); if (q) q.focus({ preventScroll: true }); }
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-opt]');
+  if (b) {
+    var s = stage(), id = b.getAttribute('data-opt');
+    if (s.key === 'a1' && Q.a1 !== id) { Q.a2 = null; Q.a3 = null; }
+    if (s.key === 'a2' && Q.a2 !== id) { Q.a3 = null; }
+    Q[s.key] = id; Q.step++;
+    if (Q.step === 1) track('quiz_iniciado', { objetivo: Q.a1 });
+    renderQuiz(true); return;
+  }
+  if (e.target.closest('[data-back]')) { Q.step = Math.max(0, Q.step - 1); renderQuiz(true); return; }
+  if (e.target.closest('[data-restart]')) { Q = { step: 0, a1: null, a2: null, a3: null, name: Q.name, ref: '' }; renderQuiz(true); return; }
+  if (e.target.closest('#f-send')) { track('quiz_enviado', { objetivo: Q.a1, interesse: Q.a2, etapa: Q.a3 }); return; }
+  var w = e.target.closest('[data-track]');
+  if (w) track(w.getAttribute('data-track'));
+});
+document.addEventListener('input', function (e) {
+  if (e.target.id === 'f-name') Q.name = e.target.value;
+  else if (e.target.id === 'f-ref') Q.ref = e.target.value;
+  else return;
+  var send = $('#f-send'); if (send) send.href = wa(message());
+});
+
+/* rolar até o formulário, centralizado na tela */
+document.addEventListener('click', function (e) {
+  var a = e.target.closest('[data-go-quiz]'); if (!a) return;
+  e.preventDefault();
+  var el = $('#curadoria'), r = el.getBoundingClientRect();
+  var off = Math.max(16, (window.innerHeight - 80 - r.height) / 2);
+  window.scrollTo({ top: window.pageYOffset + r.top - off, behavior: REDUCED ? 'auto' : 'smooth' });
+  track('ir_para_formulario');
+});
+
+/* ================= VITRINE ================= */
+var ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+function renderCards() {
+  $('#trilho').innerHTML = CARDS.map(function (c) {
+    return '<article class="card" data-card>' +
+      '<div class="media"><video data-src="' + c.video + '" poster="' + c.poster + '" muted loop playsinline preload="none" aria-label="' + esc(P(c.alt)) + '"></video>' +
+      '<span class="chip">' + esc(P(c.badge)) + '</span></div>' +
+      '<div class="card-body"><span class="t-label">' + esc(P(c.where)) + '</span>' +
+      '<h3 class="t-h3">' + esc(P(c.title)) + '</h3>' +
+      '<p class="t-body">' + esc(P(c.text)) + '</p>' +
+      '<dl class="facts">' + c.facts.map(function (f) { return '<div><dt>' + esc(P(f.k)) + '</dt><dd>' + esc(P(f.v)) + '</dd></div>'; }).join('') + '</dl>' +
+      (c.bar ? '<div class="bar" aria-hidden="true"><i></i></div>' : '') +
+      '<div class="spacer"></div>' +
+      '<a class="btn btn-verde" href="' + wa(P(c.wa)) + '" target="_blank" rel="noopener" data-track="card_' + c.id + '">' + esc(P(c.cta)) + ARROW + '</a>' +
+      '<p class="t-small note">' + esc(P(c.note)) + '</p></div></article>';
+  }).join('');
+  $('#dots').innerHTML = CARDS.map(function (c, i) {
+    return '<button type="button" data-dot="' + i + '" aria-label="' + esc(T('vDot') + (i + 1)) + '"><i></i></button>';
+  }).join('');
+  observeVideos();
+  updateDots();
+}
+var trilho = $('#trilho');
+function cardStep() { var c = $('[data-card]', trilho); return c ? c.offsetWidth + 12 : 1; }
+function currentCard() { return Math.max(0, Math.min(CARDS.length - 1, Math.round(trilho.scrollLeft / cardStep()))); }
+function goCard(i) { trilho.scrollTo({ left: i * cardStep(), behavior: REDUCED ? 'auto' : 'smooth' }); }
+function updateDots() {
+  var i = currentCard();
+  $$('[data-dot]').forEach(function (d, j) { d.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+  $('#prev').disabled = i === 0; $('#next').disabled = i === CARDS.length - 1;
+}
+var ticking = false;
+trilho.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(function () { updateDots(); ticking = false; }); } }, { passive: true });
+document.addEventListener('click', function (e) { var d = e.target.closest('[data-dot]'); if (d) goCard(+d.getAttribute('data-dot')); });
+$('#prev').addEventListener('click', function () { goCard(currentCard() - 1); });
+$('#next').addEventListener('click', function () { goCard(currentCard() + 1); });
+trilho.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight') { e.preventDefault(); goCard(currentCard() + 1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goCard(currentCard() - 1); }
+});
+
+/* ================= VÍDEOS: só carregam e tocam quando aparecem ================= */
+var vio = 'IntersectionObserver' in window ? new IntersectionObserver(function (entries) {
+  entries.forEach(function (en) {
+    var v = en.target;
+    if (en.isIntersecting && en.intersectionRatio >= 0.5) {
+      if (!v.src) { v.src = v.getAttribute('data-src'); }
+      if (!REDUCED) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+    } else if (!v.paused) { v.pause(); }
+  });
+}, { threshold: [0, 0.5] }) : null;
+function observeVideos() {
+  $$('video[data-src]').forEach(function (v) {
+    if (v.__obs) return; v.__obs = true;
+    if (vio) vio.observe(v); else { v.src = v.getAttribute('data-src'); if (!REDUCED) v.play(); }
+  });
+}
+document.addEventListener('visibilitychange', function () { if (document.hidden) $$('video').forEach(function (v) { v.pause(); }); });
+
+/* ================= BARRA FIXA ================= */
+var dock = $('#dock'), heroVisible = true, quizVisible = false;
+function dockUpdate() { dock.classList.toggle('show', !heroVisible && !quizVisible); }
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver(function (en) { heroVisible = en[0].isIntersecting; dockUpdate(); }).observe($('#hero-cta'));
+  new IntersectionObserver(function (en) { quizVisible = en[0].isIntersecting; dockUpdate(); }, { threshold: 0.25 }).observe($('#curadoria'));
+} else { dock.classList.add('show'); }
+
+/* ================= IDIOMA ================= */
+$$('.lang button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    LANG = b.getAttribute('data-lang');
+    try { localStorage.setItem('co_lang', LANG); } catch (e) {}
+    render(); track('idioma_' + LANG);
+  });
+});
+
+function render() { applyText(); renderQuiz(false); var i = trilho ? currentCard() : 0; renderCards(); trilho.scrollLeft = i * cardStep(); updateDots(); }
+render();
+})();
+</script>
+</body>
+</html>

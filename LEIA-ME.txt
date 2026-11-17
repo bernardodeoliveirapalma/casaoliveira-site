@@ -1,0 +1,27 @@
+CASA OLIVEIRA · SITE (casaoliveira.site)
+
+O QUE TEM NESTA PASTA
+- index.html: a página inteira (textos em PT e EN ficam no bloco "TEXTOS" do código)
+- assets/: logo, fotos, vídeos, ícone e imagem de compartilhamento
+- robots.txt e sitemap.xml: para o Google encontrar a página
+
+COMO PUBLICAR (exemplo com Netlify, gratuito)
+1. Acesse app.netlify.com/drop e arraste esta pasta inteira.
+2. Em "Domain settings", adicione o domínio casaoliveira.site.
+3. No painel onde o domínio foi comprado, aponte o DNS para o Netlify
+   (o Netlify mostra exatamente os registros na tela).
+4. O certificado de segurança (https) é ativado sozinho.
+Qualquer hospedagem de site estático também serve (Vercel, Hostinger, Cloudflare Pages).
+
+RASTREAMENTO (opcional)
+No index.html, procure "CONFIGURAÇÃO" e preencha:
+- metaPixelId: ID do Pixel da Meta (para anúncios e remarketing)
+- ga4Id: ID do Google Analytics 4
+Eventos já prontos: quiz iniciado, quiz enviado (Lead), cliques nos cartões,
+lista reservada e WhatsApp.
+
+LINKS PARA DIVULGAR
+- Bio do Instagram: https://casaoliveira.site/?utm_source=instagram
+- Anúncios: https://casaoliveira.site/?utm_source=facebook&utm_medium=paid
+A mensagem do WhatsApp termina com "Vim pelo Instagram", "Vim pelo anúncio"
+ou "Vim pelo site", conforme a origem.
