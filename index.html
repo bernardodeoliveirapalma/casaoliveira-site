@@ -111,7 +111,7 @@ main{max-width:520px;margin:0 auto;padding-bottom:96px}
 /* prova */
 .stats{border-top:1px solid var(--linha)}
 .stat{height:80px;border-bottom:1px solid var(--linha);display:flex;align-items:center;justify-content:space-between;gap:16px}
-.stat b{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1;color:var(--verde);white-space:nowrap}
+.stat b{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1;color:var(--verde);white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
 .stat span{font-size:13px;line-height:1.5;color:var(--marrom);text-align:right}
 
 /* quiz */
@@ -235,10 +235,10 @@ footer .t-label{color:var(--verde-esc)}
 
   <!-- 2. PROVA -->
   <section class="sec wrap" data-t-aria="proofAria" aria-label="Credenciais">
-    <div class="stats">
-      <div class="stat"><b data-t="s1n"></b><span data-t="s1l"></span></div>
-      <div class="stat"><b data-t="s2n"></b><span data-t="s2l"></span></div>
-      <div class="stat"><b data-t="s3n"></b><span data-t="s3l"></span></div>
+    <div class="stats" id="stats">
+      <div class="stat"><b data-t="s1n" data-count></b><span data-t="s1l"></span></div>
+      <div class="stat"><b data-t="s2n" data-count></b><span data-t="s2l"></span></div>
+      <div class="stat"><b data-t="s3n" data-count></b><span data-t="s3l"></span></div>
     </div>
   </section>
 
@@ -534,6 +534,7 @@ try {
 } catch (e) {}
 var Q = { step: 0, a1: null, a2: null, a3: null, name: '', ref: '' };
 var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+var STATS_DONE = !('IntersectionObserver' in window);
 
 function L() { return LANG === 'en' ? 1 : 0; }
 function T(k) { var v = D[k]; return v ? v[L()] : ''; }
@@ -575,7 +576,10 @@ function track(name, extra) {
 /* ================= TEXTOS NA PÁGINA ================= */
 function applyText() {
   document.documentElement.lang = LANG === 'en' ? 'en' : 'pt-BR';
-  $$('[data-t]').forEach(function (el) { el.textContent = T(el.getAttribute('data-t')); });
+  $$('[data-t]').forEach(function (el) {
+    var v = T(el.getAttribute('data-t'));
+    el.textContent = (el.hasAttribute('data-count') && !STATS_DONE && !REDUCED) ? v.replace(/\d+/, function (n) { return +n >= 10 ? '0' : n; }) : v;
+  });
   $$('[data-t-alt]').forEach(function (el) { el.alt = T(el.getAttribute('data-t-alt')); });
   $$('[data-t-aria]').forEach(function (el) { el.setAttribute('aria-label', T(el.getAttribute('data-t-aria'))); });
   $$('[data-wa]').forEach(function (el) {
@@ -726,6 +730,29 @@ function observeVideos() {
   });
 }
 document.addEventListener('visibilitychange', function () { if (document.hidden) $$('video').forEach(function (v) { v.pause(); }); });
+
+/* ================= NÚMEROS QUE SOBEM ================= */
+function countUp() {
+  $$('[data-count]').forEach(function (el, i) {
+    var final = T(el.getAttribute('data-t')), m = final.match(/\d+/);
+    if (!m || +m[0] < 10) { el.textContent = final; return; }
+    var target = +m[0], dur = 1600, delay = i * 180, start = null;
+    function frame(ts) {
+      if (start === null) start = ts;
+      var t = Math.min(1, Math.max(0, (ts - start - delay) / dur));
+      var e = 1 - Math.pow(1 - t, 3);
+      el.textContent = final.replace(/\d+/, String(Math.round(target * e)));
+      if (t < 1) requestAnimationFrame(frame); else el.textContent = final;
+    }
+    requestAnimationFrame(frame);
+  });
+}
+if (!STATS_DONE && !REDUCED) {
+  var sio = new IntersectionObserver(function (en) {
+    if (en[0].isIntersecting) { STATS_DONE = true; sio.disconnect(); countUp(); }
+  }, { threshold: 0.4 });
+  sio.observe($('#stats'));
+} else { STATS_DONE = true; }
 
 /* ================= BARRA FIXA ================= */
 var dock = $('#dock'), heroVisible = true, quizVisible = false;
