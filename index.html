@@ -832,8 +832,8 @@ $$('.lang button').forEach(function (b) {
     pencil(g, pts, 1.5, .95, .6);
     pencil(g, pts.map(function (p) { return [p[0] + .6, p[1] * .985]; }), .7, .38, 1.1);
     // nervura central e pecíolo
-    var mid = []; for (var i = 0; i <= 24; i++) { var t = i / 24; mid.push([L * t * .97 - (1 - t) * 14 * (i < 3 ? 1 : 0), v.b * Math.sin(Math.PI * t) * .85]); }
-    mid[0] = [-16, 1.5]; mid[1] = [-8, .8];
+    var mid = []; for (var i = 0; i <= 24; i++) { var t = i / 24; mid.push([L * t * .97, v.b * Math.sin(Math.PI * t) * .85]); }
+    mid[0] = [0, 0];
     pencil(g, mid, 1.2, .85, .45);
     // nervuras laterais, finas
     for (var k = 1; k < 8; k++) {
@@ -882,15 +882,15 @@ $$('.lang button').forEach(function (b) {
       });
     }), ox: 20, oy: Hd * .55, L: len };
   }
-  SPRIGS.push(sprig(520), sprig(460));
+  
 
   // textura de papel sobre o verde
   var paper = sprite(256, 256, function (g) { for (var i = 0; i < 2600; i++) { g.fillStyle = 'rgba(' + (rnd() < .5 ? '255,255,245' : '10,20,5') + ',' + (rnd() * .07).toFixed(3) + ')'; g.fillRect(rnd() * 256, rnd() * 256, 1 + rnd(), 1 + rnd()); } });
   var paperPat = ctx.createPattern(paper, 'repeat');
 
   /* ---------- as folhas no ar ---------- */
-  var mobile = W < 700, items = [], N = mobile ? 15 : 22;
-  for (var j = 0; j < N + 2; j++) {
+  var mobile = W < 700, items = [], N = mobile ? 18 : 26;
+  for (var j = 0; j < N; j++) {
     var isSprig = j >= N, z = isSprig ? 1 : .55 + rnd() * .75;
     items.push({
       spr: isSprig ? SPRIGS[j - N] : LEAVES[Math.floor(rnd() * LEAVES.length)],
@@ -919,30 +919,30 @@ $$('.lang button').forEach(function (b) {
     if (soundOn || !ac) return; soundOn = true;
     var now = ac.currentTime, T = 6.5;
     master = ac.createGain(); master.gain.setValueAtTime(0, now);
-    master.gain.linearRampToValueAtTime(.55, now + 1.2); master.gain.setValueAtTime(.55, now + 3.6); master.gain.linearRampToValueAtTime(0, now + T);
+    master.gain.linearRampToValueAtTime(.2, now + 1.6); master.gain.setValueAtTime(.2, now + 3.4); master.gain.linearRampToValueAtTime(0, now + T);
     master.connect(ac.destination);
     // vento: ruído rosa, filtro grave que respira
     var wsrc = ac.createBufferSource(); wsrc.buffer = noiseBuf(4, true); wsrc.loop = true;
     var lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = .6;
-    lp.frequency.setValueAtTime(320, now); lp.frequency.linearRampToValueAtTime(900, now + 2.3); lp.frequency.linearRampToValueAtTime(420, now + 4.5);
+    lp.frequency.setValueAtTime(260, now); lp.frequency.linearRampToValueAtTime(560, now + 2.3); lp.frequency.linearRampToValueAtTime(300, now + 4.5);
     var wg = ac.createGain(); wg.gain.setValueAtTime(.5, now); wg.gain.linearRampToValueAtTime(.95, now + 2.3); wg.gain.linearRampToValueAtTime(.5, now + 4.6);
-    var lfo = ac.createOscillator(), lfoG = ac.createGain(); lfo.frequency.value = .23; lfoG.gain.value = 140; lfo.connect(lfoG); lfoG.connect(lp.frequency); lfo.start(now);
+    var lfo = ac.createOscillator(), lfoG = ac.createGain(); lfo.frequency.value = .23; lfoG.gain.value = 70; lfo.connect(lfoG); lfoG.connect(lp.frequency); lfo.start(now);
     wsrc.connect(lp); lp.connect(wg); wg.connect(master); wsrc.start(now); wsrc.stop(now + T);
     // sopro mais aberto quando a brisa passa
     var bsrc = ac.createBufferSource(); bsrc.buffer = noiseBuf(3, false); bsrc.loop = true;
     var bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = .8; bp.frequency.setValueAtTime(700, now); bp.frequency.linearRampToValueAtTime(1500, now + 2.4); bp.frequency.linearRampToValueAtTime(800, now + 4.4);
-    var bg = ac.createGain(); bg.gain.setValueAtTime(0, now); bg.gain.linearRampToValueAtTime(.05, now + 2.3); bg.gain.linearRampToValueAtTime(0, now + 4.6);
+    var bg = ac.createGain(); bg.gain.setValueAtTime(0, now); bg.gain.linearRampToValueAtTime(.012, now + 2.3); bg.gain.linearRampToValueAtTime(0, now + 4.6);
     bsrc.connect(bp); bp.connect(bg); bg.connect(master); bsrc.start(now); bsrc.stop(now + T);
     // folhas: pequenos estalos e farfalhar, mais densos no meio da brisa
-    var grainB = noiseBuf(.08, false), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2200;
-    var pk = ac.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 5200; pk.gain.value = 5; pk.Q.value = .9;
-    var lg = ac.createGain(); lg.gain.value = .55; hp.connect(pk); pk.connect(lg); lg.connect(master);
+    var grainB = noiseBuf(.08, false), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1600;
+    var pk = ac.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 3800; pk.gain.value = 0; pk.Q.value = .9;
+    var lg = ac.createGain(); lg.gain.value = .22; hp.connect(pk); pk.connect(lg); lg.connect(master);
     for (var s = .25; s < 5.2; s += .012) {
       var dens = .1 + .9 * Math.exp(-Math.pow((s - 2.3) / 1.0, 2));
-      if (Math.random() > dens * .55) continue;
+      if (Math.random() > dens * .3) continue;
       var g = ac.createBufferSource(); g.buffer = grainB; g.playbackRate.value = .7 + Math.random() * .8;
-      var e = ac.createGain(), at = now + s + Math.random() * .01, len = .012 + Math.random() * .05, amp = (.04 + Math.random() * .16) * dens;
-      e.gain.setValueAtTime(0, at); e.gain.linearRampToValueAtTime(amp, at + .003); e.gain.exponentialRampToValueAtTime(.0005, at + len);
+      var e = ac.createGain(), at = now + s + Math.random() * .01, len = .03 + Math.random() * .07, amp = (.02 + Math.random() * .07) * dens;
+      e.gain.setValueAtTime(0, at); e.gain.linearRampToValueAtTime(amp, at + .012); e.gain.exponentialRampToValueAtTime(.0005, at + len);
       g.connect(e); e.connect(hp); g.start(at); g.stop(at + len + .02);
     }
   }
