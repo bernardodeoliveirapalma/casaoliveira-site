@@ -1035,8 +1035,29 @@ $$('.lang button').forEach(function (b) {
   
 
   // textura de papel sobre o verde
-  var paper = sprite(256, 256, function (g) { for (var i = 0; i < 2600; i++) { g.fillStyle = 'rgba(' + (rnd() < .5 ? '255,255,245' : '10,20,5') + ',' + (rnd() * .07).toFixed(3) + ')'; g.fillRect(rnd() * 256, rnd() * 256, 1 + rnd(), 1 + rnd()); } });
-  var paperPat = ctx.createPattern(paper, 'repeat');
+  // grão de filme: três camadas que se alternam, como película
+  function grainTile() {
+    var c = document.createElement('canvas'); c.width = c.height = 180; var g = c.getContext('2d'), im = g.createImageData(180, 180), d = im.data;
+    for (var i = 0; i < d.length; i += 4) { var v = rnd() * 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 22; }
+    g.putImageData(im, 0, 0); return ctx.createPattern(c, 'repeat');
+  }
+  var GRAIN = [grainTile(), grainTile(), grainTile()];
+  // sombras de folhas, desfocadas, como luz passando por uma oliveira
+  function shadowSprite(v) {
+    var L = 260, w = L * .13, pad = 60, c = document.createElement('canvas'); c.width = L + pad * 2; c.height = Math.round(w * 2 + pad * 2);
+    var g = c.getContext('2d'), pts = outline(L, w, v), off = 4000;
+    g.shadowColor = 'rgba(14,22,10,1)'; g.shadowBlur = 22; g.shadowOffsetX = off;
+    g.translate(pad - off, c.height / 2); g.beginPath(); pts.forEach(function (p, i) { i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); }); g.closePath(); g.fillStyle = '#000'; g.fill();
+    return { c: c, ox: pad, oy: c.height / 2, L: L };
+  }
+  var SHADOWS = [shadowSprite({ a: .1, b: 4 }), shadowSprite({ a: -.12, b: -6 }), shadowSprite({ a: 0, b: 2 })];
+  var shades = [];
+  for (var q = 0; q < (W < 700 ? 9 : 14); q++) shades.push({
+    spr: SHADOWS[q % 3], sz: (W < 700 ? 170 : 230) * (.75 + rnd() * .6), x: lerp(-.3, 1.1, rnd()) * W, y: lerp(-.1, 1.05, rnd()) * H,
+    vx: 7 + rnd() * 10, vy: 2 + rnd() * 5, rot: rnd() * 6.283, vr: (rnd() - .5) * .12, a: .16 + rnd() * .16, ph: rnd() * 6.283
+  });
+  // assinatura discreta, letra por letra
+  var WORD = 'CASA OLIVEIRA';
 
   /* ---------- as folhas no ar ---------- */
   var mobile = W < 700, items = [], N = mobile ? 18 : 26;
@@ -1111,38 +1132,88 @@ $$('.lang button').forEach(function (b) {
   }
 
   /* ---------- tempo ---------- */
-  var FADE0 = 3.3, FADE1 = 4.35, start = 0, last = 0, done = false, raf;
+  // Ritmo sem pressa: entra devagar, respira, e a cortina verde sobe com a curva de um tecido.
+  function eOut(x) { x = Math.max(0, Math.min(1, x)); return 1 - Math.pow(1 - x, 4); }
+  function eIO(x) { x = Math.max(0, Math.min(1, x)); return x < .5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2; }
+  var LIFT0 = 3.35, LIFT1 = 4.65, start = 0, last = 0, done = false, raf, lifted = false, gi = 0, gt = 0;
+  var page = document.querySelector('main');
+  if (page) { page.style.transform = 'translateY(70px)'; page.style.opacity = '0'; }
+  function liftPage() {
+    if (!page) return;
+    var a = page.animate([{ transform: 'translateY(70px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 1500, delay: 180, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'forwards' });
+    a.onfinish = function () { page.style.transform = ''; page.style.opacity = ''; a.cancel(); };
+  }
+  function drawWord(t) {
+    var a0 = .35, out0 = 2.75;
+    if (t > out0 + 1.2) return;
+    ctx.save();
+    ctx.font = '400 11px Jost, Helvetica, Arial, sans-serif'; ctx.textBaseline = 'middle';
+    var tr = 11 * .52, widths = [], tot = 0;
+    for (var i = 0; i < WORD.length; i++) { var cw = ctx.measureText(WORD[i]).width; widths.push(cw); tot += cw + (i < WORD.length - 1 ? tr : 0); }
+    var x = (W - tot) / 2, y = H * .5;
+    for (i = 0; i < WORD.length; i++) {
+      var pin = eOut((t - a0 - i * .055) / .9), pout = eIO((t - out0 - i * .03) / .7);
+      var al = pin * (1 - pout);
+      if (al > .003) { ctx.fillStyle = 'rgba(244,241,234,' + (al * .9).toFixed(3) + ')'; ctx.fillText(WORD[i], x, y + (1 - pin) * 9 - pout * 7); }
+      x += widths[i] + tr;
+    }
+    // filete fino que se abre sob o nome
+    var lw = eOut((t - .9) / 1.2) * (1 - eIO((t - out0) / .8)) * 34;
+    if (lw > .5) { ctx.fillStyle = 'rgba(244,241,234,.45)'; ctx.fillRect(W / 2 - lw, y + 18, lw * 2, 1); }
+    ctx.restore();
+  }
   function frame(now) {
     if (done) return;
     if (!start) { start = last = now; ov.classList.add('vivo'); }
     var t = (now - start) / 1000, dt = Math.min(.05, (now - last) / 1000); last = now;
-    var w = wind(t), bgA = 1 - sm(FADE0, FADE1, t), lfA = 1 - sm(FADE0 + .15, FADE1 - .05, t);
+    var w = wind(t), lift = eIO((t - LIFT0) / (LIFT1 - LIFT0));
+    var edge = H * (1 - lift) * 1.0 - lift * 40, bulge = Math.sin(Math.PI * lift) * Math.min(110, H * .11), rise = (H - edge);
+    if (lift > 0 && !lifted) { lifted = true; ov.style.display = 'block'; ov.style.pointerEvents = 'none'; root.classList.remove('intro'); liftPage(); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, W, H);
-    if (bgA > 0) {
-      ctx.globalAlpha = bgA; ctx.fillStyle = '#3E4A36'; ctx.fillRect(0, 0, W, H);
-      var r = ctx.createRadialGradient(W * .5, H * .42, 0, W * .5, H * .42, Math.max(W, H) * .8);
-      r.addColorStop(0, 'rgba(255,255,240,.06)'); r.addColorStop(1, 'rgba(10,20,5,.18)'); ctx.fillStyle = r; ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = paperPat; ctx.fillRect(0, 0, W, H);
+    if (edge + bulge <= 0) return finish(0);
+    // a cortina verde, com a borda de baixo curva enquanto sobe
+    ctx.save();
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, edge); ctx.quadraticCurveTo(W / 2, edge + bulge * 2, 0, edge); ctx.closePath(); ctx.clip();
+    ctx.fillStyle = '#3E4A36'; ctx.fillRect(0, 0, W, H);
+    // luz quente que respira devagar
+    var lx = W * (.38 + .1 * Math.sin(t * .35)), ly = H * (.3 + .06 * Math.cos(t * .3)) - rise * .5;
+    var r = ctx.createRadialGradient(lx, ly, 0, lx, ly, Math.max(W, H) * .85);
+    r.addColorStop(0, 'rgba(250,244,222,.13)'); r.addColorStop(.45, 'rgba(250,244,222,.03)'); r.addColorStop(1, 'rgba(8,16,4,.26)');
+    ctx.fillStyle = r; ctx.fillRect(0, 0, W, H);
+    // sombras de folhas ao fundo
+    for (var s2 = 0; s2 < shades.length; s2++) {
+      var h = shades[s2]; h.x += h.vx * w * dt; h.y += h.vy * w * dt; h.rot += h.vr * dt;
+      var k2 = h.sz / h.spr.L;
+      ctx.save(); ctx.globalAlpha = h.a * sm(0, 1.2, t);
+      ctx.translate(h.x + Math.sin(t * .4 + h.ph) * 12, h.y - rise * .55); ctx.rotate(h.rot + Math.sin(t * .5 + h.ph) * .06); ctx.scale(k2, k2);
+      ctx.drawImage(h.spr.c, -h.spr.ox, -h.spr.oy); ctx.restore();
     }
+    drawWord(t);
+    // folhas a lápis, à frente
     for (var i = 0; i < items.length; i++) {
       var l = items[i];
       l.x += l.vx * w * dt; l.y += (l.vy * w + Math.sin(t * l.sf * 3.14 + l.ph) * l.sw * .6) * dt;
       l.rot += l.vr * dt * (.6 + .4 * w); l.flip += l.vf * dt * (.6 + .4 * w);
       var k = l.sz / l.spr.L, sy = .35 + .65 * Math.abs(Math.cos(l.flip));
       ctx.save();
-      ctx.globalAlpha = l.alpha * lfA * sm(0, .5, t);
-      ctx.translate(l.x + Math.sin(t * l.sf * 2 + l.ph) * l.sw * .4, l.y);
+      ctx.globalAlpha = l.alpha * sm(0, .6, t);
+      ctx.translate(l.x + Math.sin(t * l.sf * 2 + l.ph) * l.sw * .4, l.y - rise * (1 + l.z * .25));
       ctx.rotate(l.rot + Math.sin(t * l.sf * 2.6 + l.ph) * .18); ctx.scale(k, k * sy);
       ctx.drawImage(l.spr.c, -l.spr.ox, -l.spr.oy);
       ctx.restore();
     }
-    if (t > FADE0 + .5 && root.classList.contains('intro')) { ov.style.display = 'block'; ov.style.pointerEvents = 'none'; root.classList.remove('intro'); }
-    if (t >= FADE1) return finish(0);
+    // grão de filme, trocando a 12 quadros por segundo
+    if (t - gt > .083) { gt = t; gi = (gi + 1) % 3; }
+    ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = 1;
+    ctx.save(); ctx.translate((gi * 61) % 180, (gi * 97) % 180); ctx.fillStyle = GRAIN[gi]; ctx.fillRect(-180, -180, W + 360, H + 360); ctx.restore();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.restore();
     raf = requestAnimationFrame(frame);
   }
   function finish(ms) {
     if (done) return; done = true; cancelAnimationFrame(raf);
     root.classList.remove('intro');
+    if (!lifted && page) { lifted = true; page.style.transform = ''; page.style.opacity = ''; }
     if (master && ac) { try { master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(master.gain.value, ac.currentTime); master.gain.linearRampToValueAtTime(0, ac.currentTime + 1.4); } catch (e) {} }
     var kill = function () { ov.remove(); };
     if (!ms) return kill();
