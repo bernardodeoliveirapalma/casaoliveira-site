@@ -25,6 +25,7 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
 <script>(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&(/[?&]intro\b/.test(location.search)||!sessionStorage.getItem('co_intro'))){document.documentElement.classList.add('intro');setTimeout(function(){document.documentElement.classList.remove('intro')},7000)}}catch(e){}})();</script>
+<link rel="preload" as="image" href="assets/intro-nome.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Jost:wght@300;400&display=swap">
@@ -319,13 +320,10 @@ html.intro{overflow:hidden}
 html.intro .intro-ov{display:block}
 .intro-ov.vivo{background:transparent}
 .intro-ov canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.intro-som{position:absolute;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));display:none;align-items:center;gap:8px;height:32px;padding:0 14px;border:1px solid rgba(242,240,235,.35);border-radius:999px;background:transparent;color:rgba(242,240,235,.85);font:400 10px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;opacity:0;transition:opacity .6s}
-.intro-som.on{display:flex;opacity:1}
-.intro-som svg{width:14px;height:14px}
 </style>
 </head>
 <body>
-<div class="intro-ov" id="intro" aria-hidden="true"><canvas id="intro-cv"></canvas><button class="intro-som" id="intro-som" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><span data-t="introSom">Som</span></button></div>
+<div class="intro-ov" id="intro" aria-hidden="true"><canvas id="intro-cv"></canvas></div>
 <main>
 
   <nav class="topnav" data-t-aria="navAria" aria-label="Menu">
@@ -476,7 +474,6 @@ var D = {
   logoAlt: ['Casa Oliveira, curadoria imobiliária', 'Casa Oliveira, real estate curation'],
   introL1: ['Curadoria imobiliária', 'Real estate curation'],
   introL3: ['De família para família', 'From family to family'],
-  introSom: ['Som', 'Sound'],
   navAria: ['Menu', 'Menu'],
   navQuiz: ['Curadoria', 'Curation'],
   navVit: ['Parcerias', 'Partners'],
@@ -941,7 +938,7 @@ $$('.lang button').forEach(function (b) {
 /* ================= ABERTURA ================= */
 /* Folhas de oliveira desenhadas a lápis, em branco, passam devagar sobre o verde da marca, com som de vento e folhas. */
 (function intro() {
-  var root = document.documentElement, ov = $('#intro'), cv = $('#intro-cv'), snd = $('#intro-som');
+  var root = document.documentElement, ov = $('#intro'), cv = $('#intro-cv');
   if (!root.classList.contains('intro') || !ov || !cv.getContext) return;
   try { sessionStorage.setItem('co_intro', '1'); } catch (e) {}
   var ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), W, H;
@@ -1057,7 +1054,8 @@ $$('.lang button').forEach(function (b) {
     vx: 7 + rnd() * 10, vy: 2 + rnd() * 5, rot: rnd() * 6.283, vr: (rnd() - .5) * .12, a: .16 + rnd() * .16, ph: rnd() * 6.283
   });
   // assinatura discreta, letra por letra
-  var WORD = 'CASA OLIVEIRA';
+  var NOME = new Image(); NOME.src = 'assets/intro-nome.png';
+  var LETRAS = [[0, 95], [101, 196], [202, 289], [294, 389], [436, 537], [542, 620], [625, 641], [647, 742], [748, 823], [829, 845], [850, 937], [942, 1037]], NW = 1037, NH = 114;
 
   /* ---------- as folhas no ar ---------- */
   var mobile = W < 700, items = [], N = mobile ? 18 : 26;
@@ -1123,12 +1121,7 @@ $$('.lang button').forEach(function (b) {
     else {
       var tried = ac.resume && ac.resume();
       if (tried && tried.then) tried.then(function () { if (ac.state === 'running') startSound(); }).catch(function () {});
-      setTimeout(function () { if (!soundOn && !done) snd.classList.add('on'); }, 500);
     }
-    snd.addEventListener('click', function (e) {
-      e.stopPropagation();
-      ac.resume().then(function () { startSound(); snd.classList.remove('on'); });
-    });
   }
 
   /* ---------- tempo ---------- */
@@ -1145,21 +1138,20 @@ $$('.lang button').forEach(function (b) {
   }
   function drawWord(t) {
     var a0 = .35, out0 = 2.75;
-    if (t > out0 + 1.2) return;
+    if (t > out0 + 1.3 || !NOME.complete || !NOME.naturalWidth) return;
+    var dw = Math.min(W * .74, 560), k = dw / NW, dh = NH * k, x0 = (W - dw) / 2, y0 = H * .5 - dh / 2;
     ctx.save();
-    ctx.font = '400 11px Jost, Helvetica, Arial, sans-serif'; ctx.textBaseline = 'middle';
-    var tr = 11 * .52, widths = [], tot = 0;
-    for (var i = 0; i < WORD.length; i++) { var cw = ctx.measureText(WORD[i]).width; widths.push(cw); tot += cw + (i < WORD.length - 1 ? tr : 0); }
-    var x = (W - tot) / 2, y = H * .5;
-    for (i = 0; i < WORD.length; i++) {
-      var pin = eOut((t - a0 - i * .055) / .9), pout = eIO((t - out0 - i * .03) / .7);
+    for (var i = 0; i < LETRAS.length; i++) {
+      var L = LETRAS[i], pin = eOut((t - a0 - i * .06) / 1.1), pout = eIO((t - out0 - i * .035) / .75);
       var al = pin * (1 - pout);
-      if (al > .003) { ctx.fillStyle = 'rgba(244,241,234,' + (al * .9).toFixed(3) + ')'; ctx.fillText(WORD[i], x, y + (1 - pin) * 9 - pout * 7); }
-      x += widths[i] + tr;
+      if (al <= .003) continue;
+      ctx.globalAlpha = al * .95;
+      var sw = L[1] - L[0];
+      ctx.drawImage(NOME, L[0], 0, sw, NH, x0 + L[0] * k, y0 + (1 - pin) * 14 - pout * 10, sw * k, dh);
     }
-    // filete fino que se abre sob o nome
-    var lw = eOut((t - .9) / 1.2) * (1 - eIO((t - out0) / .8)) * 34;
-    if (lw > .5) { ctx.fillStyle = 'rgba(244,241,234,.45)'; ctx.fillRect(W / 2 - lw, y + 18, lw * 2, 1); }
+    // filete fino que se abre sob o nome, como na marca
+    var lw = eOut((t - 1.0) / 1.3) * (1 - eIO((t - out0 - .2) / .8)) * dw * .53;
+    if (lw > .5) { ctx.globalAlpha = .55; ctx.fillStyle = 'rgb(244,241,234)'; ctx.fillRect(W / 2 - lw, y0 + dh + Math.max(14, dh * .28), lw * 2, 1); }
     ctx.restore();
   }
   function frame(now) {
