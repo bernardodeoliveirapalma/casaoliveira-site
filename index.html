@@ -212,16 +212,18 @@ footer .t-label{color:var(--verde-esc)}
 @media (prefers-reduced-motion: reduce){.dock{transition:none}}
 
 /* ================= ABERTURA ================= */
-.intro-ov{display:none;position:fixed;inset:0;z-index:100;cursor:pointer}
+.intro-ov{display:none;position:fixed;inset:0;z-index:100;cursor:pointer;background:#3E4A36}
 html.intro{overflow:hidden}
 html.intro .intro-ov{display:block}
-.intro-bg{position:absolute;inset:0;--r:-60vmax;background:radial-gradient(ellipse 70% 55% at 50% 50%,#26301F 0%,#161D12 62%,#0F140C 100%);-webkit-mask-image:radial-gradient(circle at 50% 50%,transparent var(--r),#000 calc(var(--r) + 34vmax));mask-image:radial-gradient(circle at 50% 50%,transparent var(--r),#000 calc(var(--r) + 34vmax))}
-.intro-line{position:absolute;left:50%;top:50%;width:132px;height:1px;background:rgba(242,240,235,.42);transform:translate(-50%,-50%) scaleX(0)}
+.intro-ov.vivo{background:transparent}
 .intro-ov canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.intro-som{position:absolute;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));display:none;align-items:center;gap:8px;height:32px;padding:0 14px;border:1px solid rgba(242,240,235,.35);border-radius:999px;background:transparent;color:rgba(242,240,235,.85);font:400 10px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;opacity:0;transition:opacity .6s}
+.intro-som.on{display:flex;opacity:1}
+.intro-som svg{width:14px;height:14px}
 </style>
 </head>
 <body>
-<div class="intro-ov" id="intro" aria-hidden="true"><div class="intro-bg" id="intro-bg"></div><div class="intro-line" id="intro-line"></div><canvas id="intro-cv"></canvas></div>
+<div class="intro-ov" id="intro" aria-hidden="true"><canvas id="intro-cv"></canvas><button class="intro-som" id="intro-som" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><span data-t="introSom">Som</span></button></div>
 <main>
 
   <div class="lang" role="group" aria-label="Idioma / Language">
@@ -363,7 +365,7 @@ var D = {
   logoAlt: ['Casa Oliveira, curadoria imobiliária', 'Casa Oliveira, real estate curation'],
   introL1: ['Curadoria imobiliária', 'Real estate curation'],
   introL3: ['De família para família', 'From family to family'],
-  introLoad: ['Carregando', 'Loading'],
+  introSom: ['Som', 'Sound'],
   badge: ['Ane & Bernardo, mãe e filho', 'Ane & Bernardo, mother and son'],
   h1a: ['Você não precisa falar com ', "You don't need to talk to "],
   h1b: ['dez corretores', 'ten brokers'],
@@ -787,137 +789,217 @@ $$('.lang button').forEach(function (b) {
 });
 
 /* ================= ABERTURA ================= */
-/* Uma azeitona de cristal lapidado gira devagar no escuro, pega luz e se dissolve enquanto a página se abre a partir do centro. */
+/* Folhas de oliveira desenhadas a lápis, em branco, passam devagar sobre o verde da marca, com som de vento e folhas. */
 (function intro() {
-  var root = document.documentElement, ov = $('#intro'), cv = $('#intro-cv'), bg = $('#intro-bg'), line = $('#intro-line');
-  if (!root.classList.contains('intro') || !ov) return;
-  var gl = null;
-  try { gl = cv.getContext('webgl', { antialias: true, alpha: true, premultipliedAlpha: true }); } catch (e) {}
-  if (!gl) { root.classList.remove('intro'); ov.remove(); return; }
+  var root = document.documentElement, ov = $('#intro'), cv = $('#intro-cv'), snd = $('#intro-som');
+  if (!root.classList.contains('intro') || !ov || !cv.getContext) return;
   try { sessionStorage.setItem('co_intro', '1'); } catch (e) {}
-
-  var dpr = Math.min(2, window.devicePixelRatio || 1), W, H;
-  function size() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); gl.viewport(0, 0, cv.width, cv.height); }
+  var ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), W, H;
+  function size() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
   size();
-
-  /* ---------- geometria: azeitona lapidada ---------- */
-  var seed = 5; function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
-  var LAT = 8, LON = 10, RX = .62, RY = .86, rings = [];
-  for (var i = 0; i <= LAT; i++) {
-    var th = Math.PI * i / LAT, ring = [];
-    if (i === 0 || i === LAT) { ring.push([0, Math.cos(th) * RY, 0]); rings.push(ring); continue; }
-    var bulge = 1 + .07 * Math.cos(th) - .05 * Math.cos(th * 2);
-    for (var j = 0; j < LON; j++) {
-      var ph = 2 * Math.PI * (j + (i % 2) * .5) / LON, jr = 1 + (rnd() - .5) * .11;
-      ring.push([Math.cos(ph) * Math.sin(th) * RX * bulge * jr, Math.cos(th) * RY * (1 + (rnd() - .5) * .04), Math.sin(ph) * Math.sin(th) * RX * bulge * jr]);
-    }
-    rings.push(ring);
-  }
-  var pos = [], nor = [];
-  function tri(a, b, c) {
-    var u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], v = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
-    var n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
-    var cx = a[0] + b[0] + c[0], cy = a[1] + b[1] + c[1], cz = a[2] + b[2] + c[2];
-    if (n[0] * cx + n[1] * cy + n[2] * cz < 0) { var t = b; b = c; c = t; n = [-n[0], -n[1], -n[2]]; }
-    var l = Math.hypot(n[0], n[1], n[2]); n = [n[0] / l, n[1] / l, n[2] / l];
-    [a, b, c].forEach(function (p) { pos.push(p[0], p[1], p[2]); nor.push(n[0], n[1], n[2]); });
-  }
-  for (i = 0; i < LAT; i++) {
-    var A = rings[i], B = rings[i + 1];
-    for (j = 0; j < LON; j++) {
-      var j2 = (j + 1) % LON;
-      if (A.length === 1) tri(A[0], B[j], B[j2]);
-      else if (B.length === 1) tri(A[j], A[j2], B[0]);
-      else if (i % 2) { tri(A[j], A[j2], B[j2]); tri(A[j], B[j2], B[j]); }
-      else { tri(A[j], A[j2], B[j]); tri(A[j2], B[j2], B[j]); }
-    }
-  }
-
-  /* ---------- shaders: vidro verde fumê, lapidado, com estúdio de luz ---------- */
-  var VS = 'attribute vec3 p;attribute vec3 n;uniform mat4 M;uniform mat4 PV;varying vec3 vN;varying vec3 vW;' +
-    'void main(){vec4 w=M*vec4(p,1.);vW=w.xyz;vN=mat3(M)*n;gl_Position=PV*w;}';
-  var FS = 'precision highp float;varying vec3 vN;varying vec3 vW;uniform vec3 cam;uniform float t;uniform float a;' +
-    'vec3 env(vec3 d){' +
-    ' float key=smoothstep(.88,.95,dot(d,normalize(vec3(-.45,.55,.7))));' +
-    ' float key2=smoothstep(.9,.97,dot(d,normalize(vec3(.6,-.15,.78))))*.7;' +
-    ' float strip=smoothstep(.07,0.,abs(d.x-.75*sin(t*.55+.6)))*smoothstep(-.2,.5,d.z)*smoothstep(-.6,.2,d.y);' +
-    ' float top=smoothstep(.55,.98,d.y)*.8;' +
-    ' float az=atan(d.x,d.z)*.9549+t*.08;float bands=smoothstep(.1,0.,abs(fract(az)-.5)-.38)*smoothstep(-.35,.15,d.y)*smoothstep(.85,.3,d.y)*.9;' +
-    ' float rim=smoothstep(.7,1.,-d.z)*.5;' +
-    ' return vec3(.03,.035,.028)+vec3(1.,.98,.93)*(key*2.2+key2*1.3+strip*1.5+top+bands)+vec3(.8,.88,.74)*rim;}' +
-    'void main(){vec3 N=normalize(vN);vec3 V=normalize(cam-vW);float nv=max(dot(N,V),0.);' +
-    ' vec3 R=reflect(-V,N);float F=.05+.95*pow(1.-nv,3.);' +
-    ' vec3 rr=refract(-V,N,.64),rg=refract(-V,N,.66),rb=refract(-V,N,.685);' +
-    ' vec3 refr=vec3(env(rr).r,env(rg).g,env(rb).b)*vec3(.30,.44,.24);' +
-    ' vec3 c=vec3(.012,.02,.01)+refr*(1.-F)*.75+env(R)*(F*1.7+.04);' +
-    ' c+=vec3(1.,.97,.9)*pow(max(dot(R,normalize(vec3(.35,.85,.4))),0.),90.)*1.6;' +
-    ' c=pow(c,vec3(1.18));c=c/(1.+c*.3);' +
-    ' gl_FragColor=vec4(c*a,a);}';
-  function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
-  var pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
-  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { root.classList.remove('intro'); ov.remove(); return; }
-  gl.useProgram(pr);
-  function buf(data, name) { var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW); var l = gl.getAttribLocation(pr, name); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 3, gl.FLOAT, false, 0, 0); }
-  buf(pos, 'p'); buf(nor, 'n');
-  var uM = gl.getUniformLocation(pr, 'M'), uPV = gl.getUniformLocation(pr, 'PV'), uCam = gl.getUniformLocation(pr, 'cam'), uT = gl.getUniformLocation(pr, 't'), uA = gl.getUniformLocation(pr, 'a');
-  gl.enable(gl.DEPTH_TEST); gl.enable(gl.CULL_FACE); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-  var NV = pos.length / 3;
-
-  /* ---------- matrizes ---------- */
-  function mul(a, b) { var o = new Array(16); for (var c = 0; c < 4; c++) for (var r = 0; r < 4; r++) { var s = 0; for (var k = 0; k < 4; k++) s += a[k * 4 + r] * b[c * 4 + k]; o[c * 4 + r] = s; } return o; }
-  function persp(fov, asp, n, f) { var t = 1 / Math.tan(fov / 2); return [t / asp, 0, 0, 0, 0, t, 0, 0, 0, 0, (f + n) / (n - f), -1, 0, 0, 2 * f * n / (n - f), 0]; }
-  function rx(a) { var c = Math.cos(a), s = Math.sin(a); return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]; }
-  function ry(a) { var c = Math.cos(a), s = Math.sin(a); return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1]; }
-  function rz(a) { var c = Math.cos(a), s = Math.sin(a); return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; }
-  function sc(k) { return [k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, 0, 0, 0, 1]; }
-  var DIST = 5, FOV = 30 * Math.PI / 180, VIEW = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -DIST, 1];
-
+  var seed = 3; function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
   function sm(a, b, x) { var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
-  function eio(x) { x = Math.max(0, Math.min(1, x)); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  var INK = '244,241,234';
+
+  /* ---------- desenho a lápis ---------- */
+  function outline(L, w, v) {           // pontos do contorno da folha, base em (0,0), ponta em (L,0)
+    var pts = [], n = 46, i, t, x, y;
+    for (i = 0; i <= n; i++) { t = i / n; x = L * t; y = -w * Math.pow(Math.sin(Math.PI * Math.pow(t, .82)), .9) * (1 + v.a * (t - .5)) + v.b * Math.sin(Math.PI * t); pts.push([x, y]); }
+    for (i = n; i >= 0; i--) { t = i / n; x = L * t; y = w * Math.pow(Math.sin(Math.PI * Math.pow(t, .82)), .9) * (1 - v.a * (t - .5)) + v.b * Math.sin(Math.PI * t); pts.push([x, y]); }
+    return pts;
+  }
+  function pencil(g, pts, width, alpha, jit, closed) {   // um traço de grafite: irregular, com pressão variável
+    for (var i = 1; i < pts.length; i++) {
+      var p = pts[i - 1], q = pts[i], pr = .55 + .45 * Math.sin(i * .37 + rnd() * .6);
+      g.strokeStyle = 'rgba(' + INK + ',' + (alpha * (.7 + .3 * pr)).toFixed(3) + ')';
+      g.lineWidth = width * (.75 + .5 * pr);
+      g.beginPath(); g.moveTo(p[0] + (rnd() - .5) * jit, p[1] + (rnd() - .5) * jit); g.lineTo(q[0] + (rnd() - .5) * jit, q[1] + (rnd() - .5) * jit); g.stroke();
+    }
+  }
+  function leafDraw(g, L, w, v) {
+    var pts = outline(L, w, v);
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    // hachura de sombra na metade de baixo, só dentro da folha
+    g.save(); g.beginPath(); pts.forEach(function (p, i) { i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); }); g.closePath(); g.clip();
+    var step = 3.6 + rnd() * 1.2;
+    for (var x = -w; x < L + w; x += step) {
+      var a = .1 + .16 * Math.sin(Math.PI * Math.min(1, Math.max(0, x / L)));
+      g.strokeStyle = 'rgba(' + INK + ',' + a.toFixed(3) + ')'; g.lineWidth = .7 + rnd() * .35;
+      g.beginPath(); g.moveTo(x + (rnd() - .5), w * (.15 + rnd() * .2) + v.b * .6); g.lineTo(x + w * .9, w * 1.15); g.stroke();
+    }
+    g.restore();
+    // contorno em dois passes, como desenho à mão
+    pencil(g, pts, 1.5, .95, .6);
+    pencil(g, pts.map(function (p) { return [p[0] + .6, p[1] * .985]; }), .7, .38, 1.1);
+    // nervura central e pecíolo
+    var mid = []; for (var i = 0; i <= 24; i++) { var t = i / 24; mid.push([L * t * .97 - (1 - t) * 14 * (i < 3 ? 1 : 0), v.b * Math.sin(Math.PI * t) * .85]); }
+    mid[0] = [-16, 1.5]; mid[1] = [-8, .8];
+    pencil(g, mid, 1.2, .85, .45);
+    // nervuras laterais, finas
+    for (var k = 1; k < 8; k++) {
+      var bx = L * (k / 8.6), by = v.b * Math.sin(Math.PI * k / 8.6) * .85, d = L * .1;
+      [-1, 1].forEach(function (s) {
+        var vp = [[bx, by], [bx + d * .45, by + s * w * .28], [bx + d, by + s * w * .52]];
+        pencil(g, vp, .55, .34, .3);
+      });
+    }
+  }
+  function sprite(Wd, Hd, fn) { var c = document.createElement('canvas'); c.width = Wd; c.height = Hd; var g = c.getContext('2d'); fn(g); grain(g, Wd, Hd); return c; }
+  function grain(g, Wd, Hd) {           // quebra o traço como grafite no papel
+    g.globalCompositeOperation = 'destination-out';
+    for (var i = 0; i < Wd * Hd / 9; i++) { g.fillStyle = 'rgba(0,0,0,' + (rnd() * .55).toFixed(2) + ')'; g.fillRect(rnd() * Wd, rnd() * Hd, 1, 1); }
+    g.globalCompositeOperation = 'source-over';
+  }
+  var LEAVES = [], SPRIGS = [], SL = 210;
+  for (var i = 0; i < 5; i++) {
+    (function () {
+      var v = { a: (rnd() - .5) * .3, b: (rnd() - .5) * 10 }, w = SL * (.105 + rnd() * .03);
+      LEAVES.push({ c: sprite(SL + 60, Math.round(w * 2 + 50), function (g) { g.translate(34, w + 25); leafDraw(g, SL - 10, w, v); }), ox: 34, oy: w + 25, L: SL });
+    })();
+  }
+  function sprig(len) {
+    var Wd = len + 140, Hd = Math.round(len * .7);
+    return { c: sprite(Wd, Hd, function (g) {
+      g.translate(20, Hd * .55);
+      var stem = [], bend = (rnd() - .5) * 50;
+      for (var i = 0; i <= 30; i++) { var t = i / 30; stem.push([len * t, bend * Math.sin(Math.PI * t) - t * 12]); }
+      pencil(g, stem, 1.6, .85, .5); pencil(g, stem.map(function (p) { return [p[0], p[1] + 2.2]; }), .8, .45, .7);
+      for (var k = 0; k < 9; k++) {
+        var t = .12 + k * .1, p = stem[Math.round(t * 30)], side = k % 2 ? 1 : -1, Lf = len * (.26 + rnd() * .07) * (1 - t * .25);
+        g.save(); g.translate(p[0], p[1]); g.rotate(side * (.75 + rnd() * .3) - .15);
+        leafDraw(g, Lf, Lf * (.11 + rnd() * .02), { a: (rnd() - .5) * .3, b: (rnd() - .5) * 6 }); g.restore();
+      }
+      g.save(); g.translate(len, stem[30][1]); g.rotate(-.12); leafDraw(g, len * .24, len * .026, { a: 0, b: 2 }); g.restore();
+      // duas azeitonas, contorno e hachura leve
+      [[.42, 1], [.62, -1]].forEach(function (o) {
+        var p = stem[Math.round(o[0] * 30)], cx = p[0] + 6, cy = p[1] + o[1] * 22, rx = len * .035, ry = len * .048, pts = [];
+        for (var a = 0; a <= 40; a++) { var th = a / 40 * 6.283; pts.push([cx + Math.cos(th) * rx, cy + Math.sin(th) * ry]); }
+        pencil(g, [[p[0], p[1]], [cx, cy - ry]], .8, .6, .3);
+        pencil(g, pts, 1.1, .85, .5);
+        g.save(); g.beginPath(); pts.forEach(function (q, i) { i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); g.clip();
+        for (var x = cx - rx; x < cx + rx * 2; x += 3) { g.strokeStyle = 'rgba(' + INK + ',.22)'; g.lineWidth = .6; g.beginPath(); g.moveTo(x, cy); g.lineTo(x - rx, cy + ry); g.stroke(); }
+        g.restore();
+      });
+    }), ox: 20, oy: Hd * .55, L: len };
+  }
+  SPRIGS.push(sprig(520), sprig(460));
+
+  // textura de papel sobre o verde
+  var paper = sprite(256, 256, function (g) { for (var i = 0; i < 2600; i++) { g.fillStyle = 'rgba(' + (rnd() < .5 ? '255,255,245' : '10,20,5') + ',' + (rnd() * .07).toFixed(3) + ')'; g.fillRect(rnd() * 256, rnd() * 256, 1 + rnd(), 1 + rnd()); } });
+  var paperPat = ctx.createPattern(paper, 'repeat');
+
+  /* ---------- as folhas no ar ---------- */
+  var mobile = W < 700, items = [], N = mobile ? 15 : 22;
+  for (var j = 0; j < N + 2; j++) {
+    var isSprig = j >= N, z = isSprig ? 1 : .55 + rnd() * .75;
+    items.push({
+      spr: isSprig ? SPRIGS[j - N] : LEAVES[Math.floor(rnd() * LEAVES.length)],
+      sz: isSprig ? (mobile ? 250 : 340) : (mobile ? 80 : 98) * z,
+      z: z, alpha: isSprig ? .95 : .5 + .45 * Math.min(1, z),
+      x: isSprig ? (j === N ? -170 : -W * .12 - 230) : lerp(-.35, 1.05, rnd()) * W,
+      y: isSprig ? (j === N ? H * .24 : H * .7) : lerp(-.1, 1.05, rnd()) * H,
+      vx: isSprig ? 62 + rnd() * 10 : (24 + rnd() * 20) * z, vy: (8 + rnd() * 12) * (isSprig ? .4 : z),
+      rot: isSprig ? (j === N ? .35 : -.25) : rnd() * 6.283, vr: isSprig ? .05 : (rnd() - .5) * .9,
+      flip: rnd() * 6.283, vf: isSprig ? .35 : (.5 + rnd() * .9) * (rnd() < .5 ? -1 : 1),
+      sw: 10 + rnd() * 22, sf: .4 + rnd() * .5, ph: rnd() * 6.283
+    });
+  }
+  items.sort(function (a, b) { return a.z - b.z; });
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function wind(t) { return .75 + 1.1 * Math.exp(-Math.pow((t - 2.3) / .9, 2)); }   // uma brisa que cresce e acalma
+
+  /* ---------- som: vento suave e folhas (sintetizado, sem arquivo) ---------- */
+  var AC = window.AudioContext || window.webkitAudioContext, ac = null, master = null, soundOn = false;
+  function noiseBuf(sec, pink) {
+    var n = Math.round(ac.sampleRate * sec), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0), b0 = 0, b1 = 0, b2 = 0;
+    for (var i = 0; i < n; i++) { var w = Math.random() * 2 - 1; if (pink) { b0 = .99765 * b0 + w * .099; b1 = .963 * b1 + w * .2965; b2 = .57 * b2 + w * 1.0527; d[i] = (b0 + b1 + b2 + w * .1848) * .2; } else d[i] = w; }
+    return b;
+  }
+  function startSound() {
+    if (soundOn || !ac) return; soundOn = true;
+    var now = ac.currentTime, T = 6.5;
+    master = ac.createGain(); master.gain.setValueAtTime(0, now);
+    master.gain.linearRampToValueAtTime(.55, now + 1.2); master.gain.setValueAtTime(.55, now + 3.6); master.gain.linearRampToValueAtTime(0, now + T);
+    master.connect(ac.destination);
+    // vento: ruído rosa, filtro grave que respira
+    var wsrc = ac.createBufferSource(); wsrc.buffer = noiseBuf(4, true); wsrc.loop = true;
+    var lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = .6;
+    lp.frequency.setValueAtTime(320, now); lp.frequency.linearRampToValueAtTime(900, now + 2.3); lp.frequency.linearRampToValueAtTime(420, now + 4.5);
+    var wg = ac.createGain(); wg.gain.setValueAtTime(.5, now); wg.gain.linearRampToValueAtTime(.95, now + 2.3); wg.gain.linearRampToValueAtTime(.5, now + 4.6);
+    var lfo = ac.createOscillator(), lfoG = ac.createGain(); lfo.frequency.value = .23; lfoG.gain.value = 140; lfo.connect(lfoG); lfoG.connect(lp.frequency); lfo.start(now);
+    wsrc.connect(lp); lp.connect(wg); wg.connect(master); wsrc.start(now); wsrc.stop(now + T);
+    // sopro mais aberto quando a brisa passa
+    var bsrc = ac.createBufferSource(); bsrc.buffer = noiseBuf(3, false); bsrc.loop = true;
+    var bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = .8; bp.frequency.setValueAtTime(700, now); bp.frequency.linearRampToValueAtTime(1500, now + 2.4); bp.frequency.linearRampToValueAtTime(800, now + 4.4);
+    var bg = ac.createGain(); bg.gain.setValueAtTime(0, now); bg.gain.linearRampToValueAtTime(.05, now + 2.3); bg.gain.linearRampToValueAtTime(0, now + 4.6);
+    bsrc.connect(bp); bp.connect(bg); bg.connect(master); bsrc.start(now); bsrc.stop(now + T);
+    // folhas: pequenos estalos e farfalhar, mais densos no meio da brisa
+    var grainB = noiseBuf(.08, false), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2200;
+    var pk = ac.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 5200; pk.gain.value = 5; pk.Q.value = .9;
+    var lg = ac.createGain(); lg.gain.value = .55; hp.connect(pk); pk.connect(lg); lg.connect(master);
+    for (var s = .25; s < 5.2; s += .012) {
+      var dens = .1 + .9 * Math.exp(-Math.pow((s - 2.3) / 1.0, 2));
+      if (Math.random() > dens * .55) continue;
+      var g = ac.createBufferSource(); g.buffer = grainB; g.playbackRate.value = .7 + Math.random() * .8;
+      var e = ac.createGain(), at = now + s + Math.random() * .01, len = .012 + Math.random() * .05, amp = (.04 + Math.random() * .16) * dens;
+      e.gain.setValueAtTime(0, at); e.gain.linearRampToValueAtTime(amp, at + .003); e.gain.exponentialRampToValueAtTime(.0005, at + len);
+      g.connect(e); e.connect(hp); g.start(at); g.stop(at + len + .02);
+    }
+  }
+  if (AC) { try { ac = new AC(); } catch (e) { ac = null; } }
+  if (ac) {
+    if (ac.state === 'running') startSound();
+    else {
+      var tried = ac.resume && ac.resume();
+      if (tried && tried.then) tried.then(function () { if (ac.state === 'running') startSound(); }).catch(function () {});
+      setTimeout(function () { if (!soundOn && !done) snd.classList.add('on'); }, 500);
+    }
+    snd.addEventListener('click', function (e) {
+      e.stopPropagation();
+      ac.resume().then(function () { startSound(); snd.classList.remove('on'); });
+    });
+  }
 
   /* ---------- tempo ---------- */
-  var OPEN0 = 2.9, OPEN1 = 4.5, start = 0, done = false, raf;
+  var FADE0 = 3.3, FADE1 = 4.35, start = 0, last = 0, done = false, raf;
   function frame(now) {
     if (done) return;
-    if (!start) start = now;
-    var t = (now - start) / 1000;
-
-    // linha fina de carregamento
-    line.style.transform = 'translate(-50%,-50%) scaleX(' + eio(t / .9).toFixed(3) + ')';
-    line.style.opacity = (1 - sm(.85, 1.3, t)).toFixed(3);
-
-    // azeitona
-    var appear = eio((t - .75) / 1.3), leave = eio((t - OPEN0 + .2) / 1.3);
-    var alpha = appear * (1 - leave);
-    var target = Math.min(W, H) * (W < 700 ? .4 : .3);
-    var k = (target / H) * (2 * DIST * Math.tan(FOV / 2)) / (2 * RY);
-    k *= (.86 + .14 * appear) * (1 + 1.4 * leave * leave);
-    var spin = t * .55 + 1.2 * (1 - appear);
-    var M = mul(rz(-.35 + .05 * Math.sin(t * .7)), mul(rx(.32 + .12 * Math.sin(t * .5)), mul(ry(spin), sc(k))));
-    var PV = mul(persp(FOV, W / H, .1, 50), VIEW);
-    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    if (alpha > .001) {
-      gl.uniformMatrix4fv(uM, false, new Float32Array(M)); gl.uniformMatrix4fv(uPV, false, new Float32Array(PV));
-      gl.uniform3f(uCam, 0, 0, DIST); gl.uniform1f(uT, t); gl.uniform1f(uA, alpha);
-      gl.drawArrays(gl.TRIANGLES, 0, NV);
+    if (!start) { start = last = now; ov.classList.add('vivo'); }
+    var t = (now - start) / 1000, dt = Math.min(.05, (now - last) / 1000); last = now;
+    var w = wind(t), bgA = 1 - sm(FADE0, FADE1, t), lfA = 1 - sm(FADE0 + .15, FADE1 - .05, t);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, W, H);
+    if (bgA > 0) {
+      ctx.globalAlpha = bgA; ctx.fillStyle = '#3E4A36'; ctx.fillRect(0, 0, W, H);
+      var r = ctx.createRadialGradient(W * .5, H * .42, 0, W * .5, H * .42, Math.max(W, H) * .8);
+      r.addColorStop(0, 'rgba(255,255,240,.06)'); r.addColorStop(1, 'rgba(10,20,5,.18)'); ctx.fillStyle = r; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = paperPat; ctx.fillRect(0, 0, W, H);
     }
-
-    // a página se abre do centro, devagar
-    var o = eio((t - OPEN0) / (OPEN1 - OPEN0)), R = Math.hypot(W, H) * .5;
-    bg.style.setProperty('--r', (-R * .5 + o * R * 1.75).toFixed(1) + 'px');
-    if (o > .55 && root.classList.contains('intro')) { ov.style.display = 'block'; ov.style.pointerEvents = 'none'; root.classList.remove('intro'); }
-    if (t >= OPEN1) return finish(0);
+    for (var i = 0; i < items.length; i++) {
+      var l = items[i];
+      l.x += l.vx * w * dt; l.y += (l.vy * w + Math.sin(t * l.sf * 3.14 + l.ph) * l.sw * .6) * dt;
+      l.rot += l.vr * dt * (.6 + .4 * w); l.flip += l.vf * dt * (.6 + .4 * w);
+      var k = l.sz / l.spr.L, sy = .35 + .65 * Math.abs(Math.cos(l.flip));
+      ctx.save();
+      ctx.globalAlpha = l.alpha * lfA * sm(0, .5, t);
+      ctx.translate(l.x + Math.sin(t * l.sf * 2 + l.ph) * l.sw * .4, l.y);
+      ctx.rotate(l.rot + Math.sin(t * l.sf * 2.6 + l.ph) * .18); ctx.scale(k, k * sy);
+      ctx.drawImage(l.spr.c, -l.spr.ox, -l.spr.oy);
+      ctx.restore();
+    }
+    if (t > FADE0 + .5 && root.classList.contains('intro')) { ov.style.display = 'block'; ov.style.pointerEvents = 'none'; root.classList.remove('intro'); }
+    if (t >= FADE1) return finish(0);
     raf = requestAnimationFrame(frame);
   }
   function finish(ms) {
     if (done) return; done = true; cancelAnimationFrame(raf);
     root.classList.remove('intro');
+    if (master && ac) { try { master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(master.gain.value, ac.currentTime); master.gain.linearRampToValueAtTime(0, ac.currentTime + 1.4); } catch (e) {} }
     var kill = function () { ov.remove(); };
     if (!ms) return kill();
     ov.style.display = 'block';
     ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'forwards' }).onfinish = kill;
   }
-  ov.addEventListener('click', function () { finish(400); });
+  ov.addEventListener('click', function () { finish(450); });
   addEventListener('resize', function () { if (!done) size(); });
   raf = requestAnimationFrame(frame);
 })();
