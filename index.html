@@ -24,7 +24,7 @@
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
-<script>(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!sessionStorage.getItem('co_intro')){document.documentElement.classList.add('intro')}}catch(e){}})();</script>
+<script>(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!sessionStorage.getItem('co_intro')){document.documentElement.classList.add('intro');setTimeout(function(){document.documentElement.classList.remove('intro')},7000)}}catch(e){}})();</script>
 <link rel="preload" as="image" href="assets/intro-casa.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -213,33 +213,33 @@ footer .t-label{color:var(--verde-esc)}
 @media (prefers-reduced-motion: reduce){.dock{transition:none}}
 
 /* ================= ABERTURA ================= */
-@property --s{syntax:'<length>';inherits:false;initial-value:0px}
 .intro-ov{display:none}
 html.intro{overflow:hidden}
-html.intro .intro-ov{display:flex;position:fixed;inset:0;z-index:100;background:#2F3A28;color:var(--creme);flex-direction:column;justify-content:space-between;padding:24px 20px calc(20px + env(safe-area-inset-bottom));cursor:pointer;transition:transform .95s cubic-bezier(.76,0,.24,1)}
-.intro-ov.out{transform:translateY(-100%)}
-.intro-ov .t-label{color:rgba(242,240,235,.72);line-height:1.6}
-.intro-row{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
-.intro-row span{white-space:nowrap}
-.intro-row span:last-child{text-align:right}
-.intro-mid{flex:1;display:flex;align-items:center;justify-content:center}
-.intro-casa{width:min(72vw,320px);height:auto;opacity:0;-webkit-mask-image:repeating-linear-gradient(90deg,#000 0 var(--s),transparent var(--s) 4px);mask-image:repeating-linear-gradient(90deg,#000 0 var(--s),transparent var(--s) 4px);animation:introCasa 1.25s .15s cubic-bezier(.22,1,.36,1) forwards}
-.intro-nome{display:block;width:100%;max-width:560px;height:auto;margin-top:16px;opacity:0;-webkit-mask-image:repeating-linear-gradient(180deg,#000 0 var(--s),transparent var(--s) 5px);mask-image:repeating-linear-gradient(180deg,#000 0 var(--s),transparent var(--s) 5px);animation:introNome 1.25s .4s cubic-bezier(.22,1,.36,1) forwards}
-.intro-fade{opacity:0;animation:introFade .6s .05s ease forwards}
-.intro-count{font-variant-numeric:tabular-nums}
-@keyframes introCasa{0%{opacity:0;--s:0px;transform:scale(1.04)}15%{opacity:1}100%{opacity:1;--s:4px;transform:scale(1)}}
-@keyframes introNome{0%{opacity:0;--s:0px}15%{opacity:1}100%{opacity:1;--s:5px}}
+html.intro .intro-ov{display:block;position:fixed;inset:0;z-index:100;overflow:hidden;cursor:pointer;color:var(--creme);background:radial-gradient(ellipse 80% 60% at 50% 46%,#3B4732 0%,#2A3424 60%,#222B1D 100%)}
+.intro-top{position:absolute;left:20px;right:20px;top:24px;display:flex;justify-content:space-between;z-index:3;opacity:0;animation:introFade .8s .2s ease forwards}
+.intro-top .t-label{color:rgba(242,240,235,.7);white-space:nowrap}
+.intro-stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.intro-casa{width:min(80vw,440px);transform-origin:59% 76%;opacity:0;will-change:transform,opacity}
+.intro-casa img{display:block;width:100%;height:auto;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 80%,transparent 99%);mask-image:linear-gradient(90deg,#000 0,#000 80%,transparent 99%)}
+.intro-nome{width:min(58vw,330px);height:auto;margin-top:32px;opacity:0}
+.intro-luz{position:absolute;inset:0;z-index:4;background:var(--creme);opacity:0;pointer-events:none}
+.intro-folhas{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.intro-folhas .st{fill:none;stroke:#B9BCA6;stroke-width:1.3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:introStem 1.1s cubic-bezier(.33,0,.2,1) forwards}
+.intro-folhas .lf{transform-box:fill-box;transform-origin:0% 50%;transform:scale(0);opacity:0;animation:introLeaf .6s cubic-bezier(.34,1.45,.64,1) forwards}
+@keyframes introStem{to{stroke-dashoffset:0}}
+@keyframes introLeaf{0%{transform:scale(0) rotate(-30deg);opacity:0}40%{opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes introFade{to{opacity:1}}
 </style>
 </head>
 <body>
 <div class="intro-ov" id="intro" aria-hidden="true">
-  <div class="intro-row intro-fade"><span class="t-label" data-t="introL1">Curadoria imobiliária</span><span class="t-label">Florianópolis</span></div>
-  <div class="intro-mid"><img class="intro-casa" src="assets/intro-casa.png" width="400" height="308" alt=""></div>
-  <div>
-    <div class="intro-row intro-fade"><span class="t-label" data-t="introL3">De família para família</span><span class="t-label"><span data-t="introLoad">Carregando</span> <span class="intro-count" id="intro-count">0</span>%</span></div>
-    <img class="intro-nome" src="assets/intro-nome.png" width="746" height="298" alt="">
+  <div class="intro-top"><span class="t-label" data-t="introL1">Curadoria imobiliária</span><span class="t-label">Florianópolis</span></div>
+  <div class="intro-stage">
+    <div class="intro-casa" id="intro-casa"><img src="assets/intro-casa.png" width="400" height="308" alt=""></div>
+    <img class="intro-nome" id="intro-nome" src="assets/intro-nome.png" width="746" height="298" alt="">
   </div>
+  <svg class="intro-folhas" id="intro-folhas" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="intro-luz" id="intro-luz"></div>
 </div>
 <main>
 
@@ -810,20 +810,65 @@ $$('.lang button').forEach(function (b) {
   var root = document.documentElement, ov = $('#intro');
   if (!root.classList.contains('intro') || !ov) return;
   try { sessionStorage.setItem('co_intro', '1'); } catch (e) {}
-  var cnt = $('#intro-count'), t0 = performance.now(), DUR = 1700, done = false;
-  function tick(now) {
-    var t = Math.min(1, (now - t0) / DUR), e = 1 - Math.pow(1 - t, 2);
-    cnt.textContent = String(Math.round(e * 100));
-    if (t < 1 && !done) requestAnimationFrame(tick);
+  var NS = 'http://www.w3.org/2000/svg', svg = $('#intro-folhas'), casa = $('#intro-casa'), nome = $('#intro-nome'), top = ov.querySelector('.intro-top');
+  var H = 800, W = Math.max(400, Math.round(H * innerWidth / innerHeight)), cx = W / 2;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  var seed = 7; function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  var CORES = ['#ECE9DF', '#D6D8C6', '#B9C0A3', '#9AA684', '#7F8D69', '#66744F'];
+  function el(tag, at, parent) { var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); parent.appendChild(e); return e; }
+  function leaf(g, x, y, ang, L, delay) {
+    var w = L * (0.17 + rnd() * 0.05);
+    var holder = el('g', { transform: 'translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')' }, g);
+    var p = el('path', { 'class': 'lf', d: 'M0 0Q' + (L * .42).toFixed(1) + ' ' + (-w).toFixed(1) + ' ' + L.toFixed(1) + ' 0Q' + (L * .42).toFixed(1) + ' ' + w.toFixed(1) + ' 0 0Z', fill: CORES[Math.floor(rnd() * CORES.length)] }, holder);
+    p.style.animationDelay = delay.toFixed(3) + 's';
   }
-  requestAnimationFrame(tick);
-  function finish() {
-    if (done) return; done = true; cnt.textContent = '100';
-    ov.classList.add('out');
-    setTimeout(function () { root.classList.remove('intro'); ov.remove(); }, 1000);
+  function bez(P, t) { var u = 1 - t; return [u * u * P[0] + 2 * u * t * P[2] + t * t * P[4], u * u * P[1] + 2 * u * t * P[3] + t * t * P[5]]; }
+  function ang(P, t) { var u = 1 - t, dx = 2 * u * (P[2] - P[0]) + 2 * t * (P[4] - P[2]), dy = 2 * u * (P[3] - P[1]) + 2 * t * (P[5] - P[3]); return Math.atan2(dy, dx) * 180 / Math.PI; }
+  function ramo(g, P, d0) {
+    var st = el('path', { 'class': 'st', d: 'M' + P[0] + ' ' + P[1] + 'Q' + P[2] + ' ' + P[3] + ' ' + P[4] + ' ' + P[5], pathLength: 1 }, g);
+    st.style.animationDelay = d0 + 's';
+    var len = Math.hypot(P[4] - P[0], P[5] - P[1]), n = Math.max(14, Math.min(48, Math.round(len / 15))), side = 1;
+    for (var i = 2; i <= n; i++) {
+      var t = i / n, q = bez(P, t), a = ang(P, t), dl = d0 + 0.12 + t * 0.95 + rnd() * 0.12;
+      side = -side;
+      leaf(g, q[0], q[1], a + side * (32 + rnd() * 24), 26 + rnd() * 14, dl);
+      if (i % 3 === 0 && t < 0.92) {
+        var ta = (a + side * (38 + rnd() * 18)) * Math.PI / 180, tl = 40 + rnd() * 34, ex = q[0] + Math.cos(ta) * tl, ey = q[1] + Math.sin(ta) * tl;
+        var tw = el('path', { 'class': 'st', d: 'M' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + 'L' + ex.toFixed(1) + ' ' + ey.toFixed(1), pathLength: 1 }, g);
+        tw.style.animationDelay = (dl - 0.05).toFixed(3) + 's'; tw.style.animationDuration = '.5s';
+        var tdeg = ta * 180 / Math.PI;
+        for (var k = 1; k <= 4; k++) leaf(g, q[0] + (ex - q[0]) * k / 4.3, q[1] + (ey - q[1]) * k / 4.3, tdeg + (k % 2 ? 1 : -1) * (30 + rnd() * 20), 20 + rnd() * 12, dl + k * 0.05);
+        leaf(g, ex, ey, tdeg + (rnd() - .5) * 16, 24 + rnd() * 10, dl + 0.24);
+        if (rnd() < .45) { var o = el('ellipse', { 'class': 'lf', cx: (ex + 3).toFixed(1), cy: (ey + 6).toFixed(1), rx: 4, ry: 5.4, fill: '#2B2A1F', stroke: '#9AA684', 'stroke-width': .8 }, g); o.style.transformOrigin = '50% 0%'; o.style.animationDelay = (dl + 0.3).toFixed(3) + 's'; }
+      }
+    }
+    leaf(g, P[4], P[5], ang(P, 1), 30, d0 + 1.1);
   }
-  var timer = setTimeout(finish, 2000);
-  ov.addEventListener('click', function () { clearTimeout(timer); finish(); });
+  var gl = el('g', {}, svg), gr = el('g', {}, svg);
+  [[-30, 650, cx * .55, 540, cx + 60, 380, 0], [-30, 300, cx * .45, 330, cx + 15, 480, .1], [-30, 830, cx * .4, 700, cx - 10, 610, .18], [-30, 40, cx * .5, 120, cx - 30, 200, .22]].forEach(function (b) { ramo(gl, b.slice(0, 6), b[6]); });
+  [[W + 30, 150, W - cx * .6, 260, cx - 60, 430, .05], [W + 30, 520, W - cx * .5, 470, cx - 20, 320, .14], [W + 30, -20, W - cx * .45, 100, cx + 25, 230, .2], [W + 30, 790, W - cx * .5, 700, cx + 40, 640, .26]].forEach(function (b) { ramo(gr, b.slice(0, 6), b[6]); });
+  [[gl, -30, -1], [gr, W + 30, 1]].forEach(function (x) { x[0].style.transformBox = 'view-box'; x[0].style.transformOrigin = x[1] + 'px 400px'; });
+
+  var E = 'cubic-bezier(.65,0,.35,1)', anims = [], done = false, T = [];
+  function at(ms, fn) { T.push(setTimeout(fn, ms)); }
+  at(1350, function () {
+    anims.push(gl.animate([{ transform: 'none' }, { transform: 'translate(' + (-cx * .85) + 'px,30px) rotate(-20deg)' }], { duration: 1400, easing: E, fill: 'forwards' }));
+    anims.push(gr.animate([{ transform: 'none' }, { transform: 'translate(' + (cx * .85) + 'px,-30px) rotate(20deg)' }], { duration: 1400, easing: E, fill: 'forwards' }));
+    anims.push(casa.animate([{ opacity: 0, transform: 'scale(1.1)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 1500, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' }));
+  });
+  at(1950, function () { anims.push(nome.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' })); });
+  at(3050, function () {
+    [nome, top, svg].forEach(function (e) { e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 450, fill: 'forwards' }); });
+    casa.animate([{ transform: 'scale(1)' }, { transform: 'scale(48)' }], { duration: 1100, easing: 'cubic-bezier(.7,0,.84,0)', fill: 'forwards' });
+    $('#intro-luz').animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, delay: 720, easing: 'ease-in', fill: 'forwards' });
+
+  });
+  at(4200, function () { finish(450); });
+  function finish(d) {
+    if (done) return; done = true; T.forEach(clearTimeout);
+    ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: d, easing: 'ease-out', fill: 'forwards' }).onfinish = function () { root.classList.remove('intro'); ov.remove(); };
+  }
+  ov.addEventListener('click', function () { finish(350); });
 })();
 
 function render() { applyText(); renderQuiz(false); var i = trilho ? currentCard() : 0; renderCards(); trilho.scrollLeft = i * cardStep(); updateDots(); }
