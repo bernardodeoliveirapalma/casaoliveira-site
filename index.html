@@ -24,6 +24,8 @@
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
+<script>(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!sessionStorage.getItem('co_intro')){document.documentElement.classList.add('intro')}}catch(e){}})();</script>
+<link rel="preload" as="image" href="assets/intro-casa.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Jost:wght@300;400&display=swap">
@@ -209,9 +211,36 @@ footer .t-label{color:var(--verde-esc)}
 .dock .wa{flex:none;width:56px;height:56px;border-radius:50%;border:1px solid var(--verde);display:flex;align-items:center;justify-content:center;color:var(--verde)}
 .dock .wa svg{width:20px;height:20px}
 @media (prefers-reduced-motion: reduce){.dock{transition:none}}
+
+/* ================= ABERTURA ================= */
+@property --s{syntax:'<length>';inherits:false;initial-value:0px}
+.intro-ov{display:none}
+html.intro{overflow:hidden}
+html.intro .intro-ov{display:flex;position:fixed;inset:0;z-index:100;background:#2F3A28;color:var(--creme);flex-direction:column;justify-content:space-between;padding:24px 20px calc(20px + env(safe-area-inset-bottom));cursor:pointer;transition:transform .95s cubic-bezier(.76,0,.24,1)}
+.intro-ov.out{transform:translateY(-100%)}
+.intro-ov .t-label{color:rgba(242,240,235,.72);line-height:1.6}
+.intro-row{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.intro-row span{white-space:nowrap}
+.intro-row span:last-child{text-align:right}
+.intro-mid{flex:1;display:flex;align-items:center;justify-content:center}
+.intro-casa{width:min(72vw,320px);height:auto;opacity:0;-webkit-mask-image:repeating-linear-gradient(90deg,#000 0 var(--s),transparent var(--s) 4px);mask-image:repeating-linear-gradient(90deg,#000 0 var(--s),transparent var(--s) 4px);animation:introCasa 1.25s .15s cubic-bezier(.22,1,.36,1) forwards}
+.intro-nome{display:block;width:100%;max-width:560px;height:auto;margin-top:16px;opacity:0;-webkit-mask-image:repeating-linear-gradient(180deg,#000 0 var(--s),transparent var(--s) 5px);mask-image:repeating-linear-gradient(180deg,#000 0 var(--s),transparent var(--s) 5px);animation:introNome 1.25s .4s cubic-bezier(.22,1,.36,1) forwards}
+.intro-fade{opacity:0;animation:introFade .6s .05s ease forwards}
+.intro-count{font-variant-numeric:tabular-nums}
+@keyframes introCasa{0%{opacity:0;--s:0px;transform:scale(1.04)}15%{opacity:1}100%{opacity:1;--s:4px;transform:scale(1)}}
+@keyframes introNome{0%{opacity:0;--s:0px}15%{opacity:1}100%{opacity:1;--s:5px}}
+@keyframes introFade{to{opacity:1}}
 </style>
 </head>
 <body>
+<div class="intro-ov" id="intro" aria-hidden="true">
+  <div class="intro-row intro-fade"><span class="t-label" data-t="introL1">Curadoria imobiliária</span><span class="t-label">Florianópolis</span></div>
+  <div class="intro-mid"><img class="intro-casa" src="assets/intro-casa.png" width="400" height="308" alt=""></div>
+  <div>
+    <div class="intro-row intro-fade"><span class="t-label" data-t="introL3">De família para família</span><span class="t-label"><span data-t="introLoad">Carregando</span> <span class="intro-count" id="intro-count">0</span>%</span></div>
+    <img class="intro-nome" src="assets/intro-nome.png" width="746" height="298" alt="">
+  </div>
+</div>
 <main>
 
   <div class="lang" role="group" aria-label="Idioma / Language">
@@ -351,6 +380,9 @@ var CONFIG = {
 /* ================= TEXTOS: [português, inglês] ================= */
 var D = {
   logoAlt: ['Casa Oliveira, curadoria imobiliária', 'Casa Oliveira, real estate curation'],
+  introL1: ['Curadoria imobiliária', 'Real estate curation'],
+  introL3: ['De família para família', 'From family to family'],
+  introLoad: ['Carregando', 'Loading'],
   badge: ['Ane & Bernardo, mãe e filho', 'Ane & Bernardo, mother and son'],
   h1a: ['Você não precisa falar com ', "You don't need to talk to "],
   h1b: ['dez corretores', 'ten brokers'],
@@ -772,6 +804,27 @@ $$('.lang button').forEach(function (b) {
     render(); track('idioma_' + LANG);
   });
 });
+
+/* ================= ABERTURA ================= */
+(function intro() {
+  var root = document.documentElement, ov = $('#intro');
+  if (!root.classList.contains('intro') || !ov) return;
+  try { sessionStorage.setItem('co_intro', '1'); } catch (e) {}
+  var cnt = $('#intro-count'), t0 = performance.now(), DUR = 1700, done = false;
+  function tick(now) {
+    var t = Math.min(1, (now - t0) / DUR), e = 1 - Math.pow(1 - t, 2);
+    cnt.textContent = String(Math.round(e * 100));
+    if (t < 1 && !done) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  function finish() {
+    if (done) return; done = true; cnt.textContent = '100';
+    ov.classList.add('out');
+    setTimeout(function () { root.classList.remove('intro'); ov.remove(); }, 1000);
+  }
+  var timer = setTimeout(finish, 2000);
+  ov.addEventListener('click', function () { clearTimeout(timer); finish(); });
+})();
 
 function render() { applyText(); renderQuiz(false); var i = trilho ? currentCard() : 0; renderCards(); trilho.scrollLeft = i * cardStep(); updateDots(); }
 render();
