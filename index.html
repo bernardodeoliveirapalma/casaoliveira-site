@@ -212,15 +212,16 @@ footer .t-label{color:var(--verde-esc)}
 @media (prefers-reduced-motion: reduce){.dock{transition:none}}
 
 /* ================= ABERTURA ================= */
-.intro-ov{display:none;position:fixed;inset:0;z-index:100;cursor:pointer;background:#27311F}
+.intro-ov{display:none;position:fixed;inset:0;z-index:100;cursor:pointer}
 html.intro{overflow:hidden}
 html.intro .intro-ov{display:block}
-.intro-ov.vivo{background:transparent}
+.intro-bg{position:absolute;inset:0;--r:-60vmax;background:radial-gradient(ellipse 70% 55% at 50% 50%,#26301F 0%,#161D12 62%,#0F140C 100%);-webkit-mask-image:radial-gradient(circle at 50% 50%,transparent var(--r),#000 calc(var(--r) + 34vmax));mask-image:radial-gradient(circle at 50% 50%,transparent var(--r),#000 calc(var(--r) + 34vmax))}
+.intro-line{position:absolute;left:50%;top:50%;width:132px;height:1px;background:rgba(242,240,235,.42);transform:translate(-50%,-50%) scaleX(0)}
 .intro-ov canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
-<div class="intro-ov" id="intro" aria-hidden="true"><canvas id="intro-cv"></canvas></div>
+<div class="intro-ov" id="intro" aria-hidden="true"><div class="intro-bg" id="intro-bg"></div><div class="intro-line" id="intro-line"></div><canvas id="intro-cv"></canvas></div>
 <main>
 
   <div class="lang" role="group" aria-label="Idioma / Language">
@@ -786,179 +787,126 @@ $$('.lang button').forEach(function (b) {
 });
 
 /* ================= ABERTURA ================= */
-/* Folhas de oliveira desenhadas em canvas: um vento atravessa a tela e leva o verde embora, revelando a página. */
+/* Uma azeitona de cristal lapidado gira devagar no escuro, pega luz e se dissolve enquanto a página se abre a partir do centro. */
 (function intro() {
-  var root = document.documentElement, ov = $('#intro'), cv = $('#intro-cv');
-  if (!root.classList.contains('intro') || !ov || !cv.getContext) return;
+  var root = document.documentElement, ov = $('#intro'), cv = $('#intro-cv'), bg = $('#intro-bg'), line = $('#intro-line');
+  if (!root.classList.contains('intro') || !ov) return;
+  var gl = null;
+  try { gl = cv.getContext('webgl', { antialias: true, alpha: true, premultipliedAlpha: true }); } catch (e) {}
+  if (!gl) { root.classList.remove('intro'); ov.remove(); return; }
   try { sessionStorage.setItem('co_intro', '1'); } catch (e) {}
-  var ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), W, H;
-  function size() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+
+  var dpr = Math.min(2, window.devicePixelRatio || 1), W, H;
+  function size() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); gl.viewport(0, 0, cv.width, cv.height); }
   size();
 
-  var seed = 11; function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function ease(t) { t = Math.max(0, Math.min(1, t)); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  /* ---------- geometria: azeitona lapidada ---------- */
+  var seed = 5; function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  var LAT = 8, LON = 10, RX = .62, RY = .86, rings = [];
+  for (var i = 0; i <= LAT; i++) {
+    var th = Math.PI * i / LAT, ring = [];
+    if (i === 0 || i === LAT) { ring.push([0, Math.cos(th) * RY, 0]); rings.push(ring); continue; }
+    var bulge = 1 + .07 * Math.cos(th) - .05 * Math.cos(th * 2);
+    for (var j = 0; j < LON; j++) {
+      var ph = 2 * Math.PI * (j + (i % 2) * .5) / LON, jr = 1 + (rnd() - .5) * .11;
+      ring.push([Math.cos(ph) * Math.sin(th) * RX * bulge * jr, Math.cos(th) * RY * (1 + (rnd() - .5) * .04), Math.sin(ph) * Math.sin(th) * RX * bulge * jr]);
+    }
+    rings.push(ring);
+  }
+  var pos = [], nor = [];
+  function tri(a, b, c) {
+    var u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], v = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+    var n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+    var cx = a[0] + b[0] + c[0], cy = a[1] + b[1] + c[1], cz = a[2] + b[2] + c[2];
+    if (n[0] * cx + n[1] * cy + n[2] * cz < 0) { var t = b; b = c; c = t; n = [-n[0], -n[1], -n[2]]; }
+    var l = Math.hypot(n[0], n[1], n[2]); n = [n[0] / l, n[1] / l, n[2] / l];
+    [a, b, c].forEach(function (p) { pos.push(p[0], p[1], p[2]); nor.push(n[0], n[1], n[2]); });
+  }
+  for (i = 0; i < LAT; i++) {
+    var A = rings[i], B = rings[i + 1];
+    for (j = 0; j < LON; j++) {
+      var j2 = (j + 1) % LON;
+      if (A.length === 1) tri(A[0], B[j], B[j2]);
+      else if (B.length === 1) tri(A[j], A[j2], B[0]);
+      else if (i % 2) { tri(A[j], A[j2], B[j2]); tri(A[j], B[j2], B[j]); }
+      else { tri(A[j], A[j2], B[j]); tri(A[j2], B[j2], B[j]); }
+    }
+  }
+
+  /* ---------- shaders: vidro verde fumê, lapidado, com estúdio de luz ---------- */
+  var VS = 'attribute vec3 p;attribute vec3 n;uniform mat4 M;uniform mat4 PV;varying vec3 vN;varying vec3 vW;' +
+    'void main(){vec4 w=M*vec4(p,1.);vW=w.xyz;vN=mat3(M)*n;gl_Position=PV*w;}';
+  var FS = 'precision highp float;varying vec3 vN;varying vec3 vW;uniform vec3 cam;uniform float t;uniform float a;' +
+    'vec3 env(vec3 d){' +
+    ' float key=smoothstep(.88,.95,dot(d,normalize(vec3(-.45,.55,.7))));' +
+    ' float key2=smoothstep(.9,.97,dot(d,normalize(vec3(.6,-.15,.78))))*.7;' +
+    ' float strip=smoothstep(.07,0.,abs(d.x-.75*sin(t*.55+.6)))*smoothstep(-.2,.5,d.z)*smoothstep(-.6,.2,d.y);' +
+    ' float top=smoothstep(.55,.98,d.y)*.8;' +
+    ' float az=atan(d.x,d.z)*.9549+t*.08;float bands=smoothstep(.1,0.,abs(fract(az)-.5)-.38)*smoothstep(-.35,.15,d.y)*smoothstep(.85,.3,d.y)*.9;' +
+    ' float rim=smoothstep(.7,1.,-d.z)*.5;' +
+    ' return vec3(.03,.035,.028)+vec3(1.,.98,.93)*(key*2.2+key2*1.3+strip*1.5+top+bands)+vec3(.8,.88,.74)*rim;}' +
+    'void main(){vec3 N=normalize(vN);vec3 V=normalize(cam-vW);float nv=max(dot(N,V),0.);' +
+    ' vec3 R=reflect(-V,N);float F=.05+.95*pow(1.-nv,3.);' +
+    ' vec3 rr=refract(-V,N,.64),rg=refract(-V,N,.66),rb=refract(-V,N,.685);' +
+    ' vec3 refr=vec3(env(rr).r,env(rg).g,env(rb).b)*vec3(.30,.44,.24);' +
+    ' vec3 c=vec3(.012,.02,.01)+refr*(1.-F)*.75+env(R)*(F*1.7+.04);' +
+    ' c+=vec3(1.,.97,.9)*pow(max(dot(R,normalize(vec3(.35,.85,.4))),0.),90.)*1.6;' +
+    ' c=pow(c,vec3(1.18));c=c/(1.+c*.3);' +
+    ' gl_FragColor=vec4(c*a,a);}';
+  function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+  var pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { root.classList.remove('intro'); ov.remove(); return; }
+  gl.useProgram(pr);
+  function buf(data, name) { var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW); var l = gl.getAttribLocation(pr, name); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 3, gl.FLOAT, false, 0, 0); }
+  buf(pos, 'p'); buf(nor, 'n');
+  var uM = gl.getUniformLocation(pr, 'M'), uPV = gl.getUniformLocation(pr, 'PV'), uCam = gl.getUniformLocation(pr, 'cam'), uT = gl.getUniformLocation(pr, 't'), uA = gl.getUniformLocation(pr, 'a');
+  gl.enable(gl.DEPTH_TEST); gl.enable(gl.CULL_FACE); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+  var NV = pos.length / 3;
+
+  /* ---------- matrizes ---------- */
+  function mul(a, b) { var o = new Array(16); for (var c = 0; c < 4; c++) for (var r = 0; r < 4; r++) { var s = 0; for (var k = 0; k < 4; k++) s += a[k * 4 + r] * b[c * 4 + k]; o[c * 4 + r] = s; } return o; }
+  function persp(fov, asp, n, f) { var t = 1 / Math.tan(fov / 2); return [t / asp, 0, 0, 0, 0, t, 0, 0, 0, 0, (f + n) / (n - f), -1, 0, 0, 2 * f * n / (n - f), 0]; }
+  function rx(a) { var c = Math.cos(a), s = Math.sin(a); return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]; }
+  function ry(a) { var c = Math.cos(a), s = Math.sin(a); return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1]; }
+  function rz(a) { var c = Math.cos(a), s = Math.sin(a); return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; }
+  function sc(k) { return [k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, 0, 0, 0, 1]; }
+  var DIST = 5, FOV = 30 * Math.PI / 180, VIEW = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -DIST, 1];
+
   function sm(a, b, x) { var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+  function eio(x) { x = Math.max(0, Math.min(1, x)); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
 
-  /* ---------- folhas desenhadas a mão, pré-renderizadas ---------- */
-  var SL = 220, SW = 64, canFilter = typeof ctx.filter === 'string';
-  function leafShape(g, L, w, a1, a2, bend) {
-    g.beginPath();
-    g.moveTo(0, 0);
-    g.bezierCurveTo(L * .22, -w * (1.05 + a1), L * .68, -w * (.95 + a2) + bend, L, bend * 1.6);
-    g.bezierCurveTo(L * .7, w * (.9 - a2) + bend, L * .24, w * (1.02 - a1), 0, 0);
-    g.closePath();
-  }
-  function makeLeaf(face, blur, v) {
-    var c = document.createElement('canvas'); c.width = SL + 40; c.height = SW + 40;
-    var g = c.getContext('2d'), L = SL - 24, w = SW * (.38 + v.w * 1.4), ox = 26, oy = (SW + 40) / 2;
-    if (blur) { if (canFilter) g.filter = 'blur(' + blur + 'px)'; }
-    g.translate(ox, oy);
-    // pecíolo
-    g.strokeStyle = face ? '#6F7556' : '#9EA287'; g.lineWidth = 2.2; g.lineCap = 'round';
-    g.beginPath(); g.moveTo(-12, 1.5); g.quadraticCurveTo(-5, .5, 2, 0); g.stroke();
-    leafShape(g, L, w, v.a1, v.a2, v.bend);
-    var gr = g.createLinearGradient(0, -w, 0, w);
-    if (face) { gr.addColorStop(0, '#3E4A2E'); gr.addColorStop(.4, '#617048'); gr.addColorStop(.55, '#748459'); gr.addColorStop(1, '#465334'); }
-    else { gr.addColorStop(0, '#B5B9A1'); gr.addColorStop(.45, '#DCDCCB'); gr.addColorStop(.6, '#E6E4D6'); gr.addColorStop(1, '#BDBFA9'); }
-    g.fillStyle = gr; g.fill();
-    // luz ao longo do comprimento
-    var gl = g.createLinearGradient(0, 0, L, 0);
-    gl.addColorStop(0, 'rgba(0,0,0,.10)'); gl.addColorStop(.45, 'rgba(255,255,240,.06)'); gl.addColorStop(1, 'rgba(0,0,0,.12)');
-    g.fillStyle = gl; g.fill();
-    g.save(); g.clip();
-    // nervura central
-    g.strokeStyle = face ? 'rgba(170,180,135,.55)' : 'rgba(140,145,115,.55)'; g.lineWidth = 1.6;
-    g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(L * .5, v.bend * .9, L, v.bend * 1.6); g.stroke();
-    // nervuras laterais, quase invisíveis
-    g.lineWidth = .8; g.strokeStyle = face ? 'rgba(160,170,125,.16)' : 'rgba(120,125,100,.18)';
-    for (var i = 1; i < 9; i++) {
-      var x = L * i / 9.5, y = v.bend * (x / L) * 1.2, d = 16 + i;
-      g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + d * .5, y - w * .3, x + d, y - w * .62); g.stroke();
-      g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + d * .5, y + w * .3, x + d, y + w * .62); g.stroke();
-    }
-    // textura de papel/pigmento
-    for (var k = 0; k < 220; k++) {
-      g.fillStyle = (rnd() < .5 ? 'rgba(255,255,235,' : 'rgba(10,20,0,') + (.035 + rnd() * .05) + ')';
-      g.fillRect(rnd() * L, (rnd() - .5) * w * 2, 1 + rnd() * 1.6, 1 + rnd() * 1.2);
-    }
-    g.restore();
-    // contorno fino, como traço de pena
-    leafShape(g, L, w, v.a1, v.a2, v.bend);
-    g.strokeStyle = face ? 'rgba(25,35,15,.35)' : 'rgba(120,125,100,.4)'; g.lineWidth = .9; g.stroke();
-    return { c: c, ox: ox, oy: oy, L: L };
-  }
-  var VAR = [], NV = 6;
-  for (var i = 0; i < NV; i++) {
-    var v = { w: rnd() * .05, a1: (rnd() - .5) * .2, a2: (rnd() - .5) * .2, bend: (rnd() - .5) * 9 };
-    VAR.push({ top: [makeLeaf(1, 0, v), makeLeaf(1, 2.5, v), makeLeaf(1, 7, v)], bot: [makeLeaf(0, 0, v), makeLeaf(0, 2.5, v), makeLeaf(0, 7, v)] });
-  }
-
-  /* ---------- a coreografia ---------- */
-  /* Uma rajada de vento: a frente (f) atravessa a tela na diagonal. As folhas viajam com ela e o verde se desfaz atrás. */
-  var mobile = W < 700, leaves = [];
-  var DIR = { x: .92, y: .39 }, SMAX, SOFT, V, T0 = .85, TAU = .32;
-  function geo() { SMAX = W * DIR.x + H * DIR.y; SOFT = Math.max(W, H) * .34; V = (SMAX + SOFT * 1.6) / 1.75; }
-  geo();
-  function front(t) { var d = t - T0; if (d <= 0) return -SOFT * .35; return -SOFT * .35 + V * (d - TAU * (1 - Math.exp(-d / TAU))); }
-  function toXY(s, q) { return [s * DIR.x - q * DIR.y, s * DIR.y + q * DIR.x]; }
-  var QMIN = function () { return -W * DIR.y - 60; }, QMAX = function () { return H * DIR.x + 60; };
-  var NG = mobile ? 70 : 110, BASE = mobile ? 78 : 92;
-  for (var j = 0; j < NG + 7; j++) {
-    var pre = j >= NG;                                    // algumas folhas soltas antes da rajada
-    var z = pre ? .75 + rnd() * .5 : .42 + Math.pow(rnd(), 1.6) * 1.1;
-    var near = z > 1.25, far = z < .58;
-    leaves.push({
-      pre: pre, z: z, sz: BASE * z * (.8 + rnd() * .4), v: VAR[Math.floor(rnd() * NV)], blur: near ? 2 : (far ? 1 : 0),
-      off: pre ? 0 : lerp(-1.05, .32, Math.pow(rnd(), .8)) * SOFT,  // posição em relação à frente do vento
-      spd: pre ? 1 : (rnd() < .1 ? .8 : .93 + rnd() * .14) * (.9 + z * .1),
-      q: lerp(-.05, 1.05, rnd()), qd: (rnd() - .35) * 70,
-      amp: (10 + rnd() * 34) * z, fr: .5 + rnd() * .9, ph: rnd() * 6.283,
-      ampx: (6 + rnd() * 22) * z, frx: .7 + rnd() * 1.1, phx: rnd() * 6.283,
-      rot0: (rnd() - .5) * 1.4, rotA: .45 + rnd() * .9, rotF: .3 + rnd() * .8,
-      flip0: rnd() * 6.283, flipS: (1.1 + rnd() * 2.4) * (rnd() < .5 ? -1 : 1),
-      alpha: far ? .58 + rnd() * .2 : (near ? .93 : .86 + rnd() * .12),
-      // folhas soltas: entram devagar pela esquerda antes da rajada
-      x0: -BASE * 1.5, y0: lerp(.15, .85, rnd()) * H, t0: .05 + rnd() * .5
-    });
-  }
-  leaves.sort(function (a, b) { return a.z - b.z; });
-
-  function drawBg(t) {
-    var f = front(t);
-    if (f - SOFT > SMAX) return;
-    var A = toXY(f - SOFT, 0), B = toXY(f, 0);
-    var g = ctx.createLinearGradient(A[0], A[1], B[0], B[1]);
-    g.addColorStop(0, 'rgba(39,49,31,0)'); g.addColorStop(.45, 'rgba(39,49,31,.35)'); g.addColorStop(.8, 'rgba(39,49,31,.9)'); g.addColorStop(1, 'rgba(39,49,31,1)');
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    ctx.globalCompositeOperation = 'source-atop';
-    var r = ctx.createRadialGradient(W / 2, H * .46, 0, W / 2, H * .46, Math.max(W, H) * .75);
-    r.addColorStop(0, 'rgba(74,88,60,.5)'); r.addColorStop(1, 'rgba(16,24,11,.55)');
-    ctx.fillStyle = r; ctx.fillRect(0, 0, W, H);
-  }
-  function drawWord(t) {
-    var a = sm(.2, .95, t);
-    if (a <= 0 || front(t) - SOFT > SMAX) return;
-    ctx.globalCompositeOperation = 'source-atop';
-    var fs = Math.min(W * .13, 76), s = 1 + .04 * sm(.2, 2.6, t);
-    ctx.save(); ctx.translate(W / 2, H * .47); ctx.scale(s, s);
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(242,240,235,' + (.96 * a) + ')';
-    if ('letterSpacing' in ctx) ctx.letterSpacing = (fs * .04).toFixed(1) + 'px';
-    ctx.font = '400 ' + fs + 'px "Cormorant Garamond", Georgia, serif';
-    ctx.fillText('Casa Oliveira', 0, 0);
-    ctx.fillStyle = 'rgba(242,240,235,' + (.6 * sm(.45, 1.15, t)) + ')';
-    if ('letterSpacing' in ctx) ctx.letterSpacing = '3px';
-    ctx.font = '400 10px Jost, Helvetica, Arial, sans-serif';
-    ctx.fillText(LANG === 'en' ? 'REAL ESTATE CURATION · FLORIANÓPOLIS' : 'CURADORIA IMOBILIÁRIA · FLORIANÓPOLIS', 0, fs * .74);
-    ctx.restore();
-    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
-  }
-  var BASEANG = Math.atan2(DIR.y, DIR.x);
-  function drawLeaf(l, t) {
-    var x, y, ang, a = 1;
-    if (l.pre) {
-      // deriva lenta, depois é capturada pela rajada
-      var d = Math.max(0, t - l.t0);
-      x = l.x0 + d * 75 * l.z; y = l.y0 + Math.sin(d * l.fr * 3.1 + l.ph) * l.amp * 1.6 + d * 16;
-      var push = front(t) + 30 - (x * DIR.x + y * DIR.y);
-      if (push > 0) { x += push * DIR.x; y += push * DIR.y; }
-      a = sm(0, .35, d);
-    } else {
-      var s = front(t) * l.spd + l.off, qq = lerp(QMIN(), QMAX(), l.q) + l.qd * t;
-      var P = toXY(s, qq); x = P[0]; y = P[1];
-    }
-    var T = t;
-    x += Math.sin(T * l.frx * 3.14 + l.phx) * l.ampx;
-    y += Math.sin(T * l.fr * 3.14 + l.ph) * l.amp;
-    if (x < -l.sz * 1.6 || x > W + l.sz * 1.6 || y < -l.sz * 1.6 || y > H + l.sz * 1.6) return false;
-    ang = BASEANG + l.rot0 + Math.sin(T * l.rotF * 3.14 + l.ph) * l.rotA;
-    var fl = Math.cos(l.flip0 + T * l.flipS), face = fl >= 0, sy = .22 + .78 * Math.abs(fl);
-    var spr = (face ? l.v.top : l.v.bot)[l.blur], k = l.sz / spr.L;
-    ctx.save();
-    ctx.globalAlpha = l.alpha * a;
-    ctx.translate(x, y); ctx.rotate(ang); ctx.scale(k, k * sy);
-    ctx.drawImage(spr.c, -spr.ox, -spr.oy);
-    ctx.restore();
-    return true;
-  }
-
-  var start = 0, done = false, raf;
+  /* ---------- tempo ---------- */
+  var OPEN0 = 2.9, OPEN1 = 4.5, start = 0, done = false, raf;
   function frame(now) {
     if (done) return;
-    if (!start) { start = now; ov.classList.add('vivo'); }
+    if (!start) start = now;
     var t = (now - start) / 1000;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-    ctx.clearRect(0, 0, W, H);
-    drawBg(t); drawWord(t);
-    ctx.globalCompositeOperation = 'source-over';
-    var vis = 0;
-    for (var i = 0; i < leaves.length; i++) if (drawLeaf(leaves[i], t)) vis++;
-    var passed = front(t) - SOFT * .6 > SMAX;
-    if (passed && root.classList.contains('intro')) { ov.style.display = 'block'; ov.style.pointerEvents = 'none'; root.classList.remove('intro'); }
-    if ((passed && t > 1.5 && vis === 0) || t > 5) return finish(t > 5 ? 300 : 0);
+
+    // linha fina de carregamento
+    line.style.transform = 'translate(-50%,-50%) scaleX(' + eio(t / .9).toFixed(3) + ')';
+    line.style.opacity = (1 - sm(.85, 1.3, t)).toFixed(3);
+
+    // azeitona
+    var appear = eio((t - .75) / 1.3), leave = eio((t - OPEN0 + .2) / 1.3);
+    var alpha = appear * (1 - leave);
+    var target = Math.min(W, H) * (W < 700 ? .4 : .3);
+    var k = (target / H) * (2 * DIST * Math.tan(FOV / 2)) / (2 * RY);
+    k *= (.86 + .14 * appear) * (1 + 1.4 * leave * leave);
+    var spin = t * .55 + 1.2 * (1 - appear);
+    var M = mul(rz(-.35 + .05 * Math.sin(t * .7)), mul(rx(.32 + .12 * Math.sin(t * .5)), mul(ry(spin), sc(k))));
+    var PV = mul(persp(FOV, W / H, .1, 50), VIEW);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    if (alpha > .001) {
+      gl.uniformMatrix4fv(uM, false, new Float32Array(M)); gl.uniformMatrix4fv(uPV, false, new Float32Array(PV));
+      gl.uniform3f(uCam, 0, 0, DIST); gl.uniform1f(uT, t); gl.uniform1f(uA, alpha);
+      gl.drawArrays(gl.TRIANGLES, 0, NV);
+    }
+
+    // a página se abre do centro, devagar
+    var o = eio((t - OPEN0) / (OPEN1 - OPEN0)), R = Math.hypot(W, H) * .5;
+    bg.style.setProperty('--r', (-R * .5 + o * R * 1.75).toFixed(1) + 'px');
+    if (o > .55 && root.classList.contains('intro')) { ov.style.display = 'block'; ov.style.pointerEvents = 'none'; root.classList.remove('intro'); }
+    if (t >= OPEN1) return finish(0);
     raf = requestAnimationFrame(frame);
   }
   function finish(ms) {
@@ -969,12 +917,9 @@ $$('.lang button').forEach(function (b) {
     ov.style.display = 'block';
     ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'forwards' }).onfinish = kill;
   }
-  ov.addEventListener('click', function () { finish(350); });
-  addEventListener('resize', function () { if (!done) { size(); geo(); } });
-  var go = function () { if (!start && !done) raf = requestAnimationFrame(frame); };
-  if (document.fonts && document.fonts.load) {
-    Promise.race([document.fonts.load('400 40px "Cormorant Garamond"'), new Promise(function (r) { setTimeout(r, 450); })]).then(go, go);
-  } else go();
+  ov.addEventListener('click', function () { finish(400); });
+  addEventListener('resize', function () { if (!done) size(); });
+  raf = requestAnimationFrame(frame);
 })();
 
 function render() { applyText(); renderQuiz(false); var i = trilho ? currentCard() : 0; renderCards(); trilho.scrollLeft = i * cardStep(); updateDots(); }
