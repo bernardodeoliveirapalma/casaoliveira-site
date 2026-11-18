@@ -137,6 +137,8 @@ main{max-width:520px;margin:0 auto;padding-bottom:96px}
 .field{margin-top:24px;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.5;font-weight:400}
 .field input{height:56px;padding:0 20px;border-radius:16px;border:1px solid var(--verde-linha);background:var(--creme);color:var(--verde-esc);font:300 16px var(--sans)}
 .quiz .btn{margin-top:16px}
+.optin{margin-top:16px;display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.5;cursor:pointer}
+.optin input{flex:none;width:22px;height:22px;margin:0;accent-color:var(--creme)}
 .note{margin-top:12px;text-align:center}
 .quiz .note{color:var(--nevoa)}
 .done{display:flex;flex-direction:column}
@@ -467,6 +469,9 @@ html.intro .intro-ov{display:block}
    Preencha os IDs para ativar o rastreamento. Vazio = desligado. */
 var CONFIG = {
   whatsapp: '5548992228009',
+  // painel da Casa Oliveira: cada quiz enviado vira um lead em Clientes
+  painelUrl: 'https://ejyyarsxwpbwntbqewed.supabase.co',
+  painelChave: 'sb_publishable_w6xQZGdPAngffq37GFtr1w_si4wuQS0',
   metaPixelId: '',   // ex.: '123456789012345'
   ga4Id: ''          // ex.: 'G-XXXXXXXXXX'
 };
@@ -497,6 +502,9 @@ var D = {
   of: ['de', 'of'], back: ['Voltar', 'Back'],
   nameLabel: ['Como podemos te chamar?', 'What should we call you?'],
   namePh: ['Seu nome', 'Your name'],
+  phoneLabel: ['Seu WhatsApp, com DDD (se quiser)', 'Your WhatsApp, with country code (optional)'],
+  phonePh: ['48 99999 9999', '+1 555 123 4567'],
+  optIn: ['Quero receber novidades da Casa Oliveira pelo WhatsApp. Posso sair quando quiser.', 'Send me Casa Oliveira news on WhatsApp. I can opt out anytime.'],
   send: ['Enviar para Ane & Bernardo', 'Send to Ane & Bernardo'],
   sendNote: ['Abre o WhatsApp com suas respostas prontas. Quem responde somos nós, não um robô.', "Opens WhatsApp with your answers ready. You'll hear from us, not a bot."],
   redo: ['Refazer respostas', 'Start over'],
@@ -664,7 +672,7 @@ try {
   if (saved === 'pt' || saved === 'en') LANG = saved;
   else if (String(navigator.language || '').slice(0, 2).toLowerCase() === 'en') LANG = 'en';
 } catch (e) {}
-var Q = { step: 0, a1: null, a2: null, a3: null, name: '', ref: '' };
+var Q = { step: 0, a1: null, a2: null, a3: null, name: '', ref: '', phone: '', optin: false };
 var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 var STATS_DONE = !('IntersectionObserver' in window);
 
@@ -745,6 +753,38 @@ function message() {
     summaryRows().map(function (r) { return r.k + ': ' + r.v; }).join('\n') +
     (askRef() && ref ? '\n' + T('kRef') + ': ' + ref : '') + '\n\n' + sourceLine();
 }
+/* lead no painel: só uma vez por quiz, sem travar o WhatsApp se falhar */
+var LEAD_SENT = '';
+function saveLead() {
+  if (!CONFIG.painelUrl || !window.fetch) return;
+  var digits = String(Q.phone || '').replace(/\D/g, '');
+  if (digits.length === 10 || digits.length === 11) digits = '55' + digits;
+  if (digits.length < 10 || digits.length > 15) digits = '';
+  var assinatura = [Q.a1, Q.a2, Q.a3, Q.name.trim(), digits].join('|');
+  if (LEAD_SENT === assinatura) return;
+  LEAD_SENT = assinatura;
+  var lang = LANG, rows; LANG = 'pt'; rows = summaryRows(); LANG = lang;
+  var resp = {};
+  rows.forEach(function (r) { if (r.v) resp[r.k] = r.v; });
+  if (askRef() && Q.ref.trim()) resp['Referência'] = Q.ref.trim().slice(0, 200);
+  var qs = new URLSearchParams(location.search), utm = {};
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) { if (qs.get(k)) utm[k] = qs.get(k).slice(0, 100); });
+  if (qs.get('fbclid')) utm.fbclid = 1;
+  if (qs.get('gclid')) utm.gclid = 1;
+  if (document.referrer) utm.referrer = document.referrer.slice(0, 200);
+  try {
+    fetch(CONFIG.painelUrl + '/rest/v1/rpc/novo_lead', {
+      method: 'POST', keepalive: true,
+      headers: { 'Content-Type': 'application/json', apikey: CONFIG.painelChave, Authorization: 'Bearer ' + CONFIG.painelChave },
+      body: JSON.stringify({
+        p_nome: Q.name.trim().slice(0, 120) || (LANG === 'en' ? 'Visitor (site)' : 'Visitante do site'),
+        p_whatsapp: digits || null, p_idioma: LANG,
+        p_origem: SOURCE === 'ig' ? 'Instagram' : SOURCE === 'ad' ? 'Anúncio' : 'Site',
+        p_utm: utm, p_respostas: resp, p_aceita_whatsapp: !!(Q.optin && digits)
+      })
+    }).catch(function () {});
+  } catch (e) {}
+}
 function renderQuiz(focus) {
   var box = $('#quiz-body'), s = stage(), html;
   if (Q.step < 3) {
@@ -763,6 +803,8 @@ function renderQuiz(focus) {
         return '<div><dt>' + esc(r.k) + '</dt><dd>' + esc(r.v) + '</dd></div>'; }).join('') + '</dl>' +
       (askRef() ? '<label class="field">' + esc(refLabel) + '<input id="f-ref" type="text" placeholder="' + esc(refPh) + '" value="' + esc(Q.ref) + '"></label>' : '') +
       '<label class="field">' + esc(T('nameLabel')) + '<input id="f-name" type="text" autocomplete="given-name" placeholder="' + esc(T('namePh')) + '" value="' + esc(Q.name) + '"></label>' +
+      '<label class="field">' + esc(T('phoneLabel')) + '<input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="' + esc(T('phonePh')) + '" value="' + esc(Q.phone) + '"></label>' +
+      '<label class="optin"><input id="f-optin" type="checkbox"' + (Q.optin ? ' checked' : '') + '><span>' + esc(T('optIn')) + '</span></label>' +
       '<a class="btn btn-creme" id="f-send" href="' + wa(message()) + '" target="_blank" rel="noopener">' + esc(T('send')) +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
       '<p class="t-small note">' + esc(T('sendNote')) + '</p>' +
@@ -783,13 +825,15 @@ document.addEventListener('click', function (e) {
   }
   if (e.target.closest('[data-back]')) { Q.step = Math.max(0, Q.step - 1); renderQuiz(true); return; }
   if (e.target.closest('[data-restart]')) { Q = { step: 0, a1: null, a2: null, a3: null, name: Q.name, ref: '' }; renderQuiz(true); return; }
-  if (e.target.closest('#f-send')) { track('quiz_enviado', { objetivo: Q.a1, interesse: Q.a2, etapa: Q.a3 }); return; }
+  if (e.target.closest('#f-send')) { track('quiz_enviado', { objetivo: Q.a1, interesse: Q.a2, etapa: Q.a3 }); saveLead(); return; }
   var w = e.target.closest('[data-track]');
   if (w) track(w.getAttribute('data-track'));
 });
 document.addEventListener('input', function (e) {
   if (e.target.id === 'f-name') Q.name = e.target.value;
   else if (e.target.id === 'f-ref') Q.ref = e.target.value;
+  else if (e.target.id === 'f-phone') { Q.phone = e.target.value; return; }
+  else if (e.target.id === 'f-optin') { Q.optin = e.target.checked; return; }
   else return;
   var send = $('#f-send'); if (send) send.href = wa(message());
 });
