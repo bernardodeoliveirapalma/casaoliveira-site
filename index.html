@@ -730,23 +730,56 @@ trilho.addEventListener('keydown', function (e) {
   if (e.key === 'ArrowLeft') { e.preventDefault(); goCard(currentCard() - 1); }
 });
 
-/* ================= VÍDEOS: só carregam e tocam quando aparecem ================= */
+/* ================= VÍDEOS: carregam quando aparecem e não param mais =================
+   Por que um vídeo parava:
+   1. Ao sair do app ou da aba, todos pausavam e nada mandava voltar.
+   2. iPhone com "Reduzir movimento" nunca tocava os vídeos.
+   3. Modo de pouca energia e navegadores de apps (Instagram) bloqueiam o play até o primeiro toque.
+   4. Rede lenta podia travar o vídeo no meio, sem nova tentativa.
+   Agora um vigia confere os vídeos visíveis a cada segundo e retoma o que estiver parado. */
+var VIDS = [];
+function vidPlay(v) {
+  if (!v.isConnected || document.hidden || !v.__want) return;
+  if (!v.src) { v.src = v.getAttribute('data-src'); }
+  v.muted = true; v.defaultMuted = true; v.playsInline = true;
+  if (!v.paused && !v.ended) return;
+  var p = v.play(); if (p && p.catch) p.catch(function () {});
+}
 var vio = 'IntersectionObserver' in window ? new IntersectionObserver(function (entries) {
   entries.forEach(function (en) {
     var v = en.target;
-    if (en.isIntersecting && en.intersectionRatio >= 0.5) {
-      if (!v.src) { v.src = v.getAttribute('data-src'); }
-      if (!REDUCED) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
-    } else if (!v.paused) { v.pause(); }
+    v.__want = en.isIntersecting && en.intersectionRatio > 0.15;
+    if (v.__want) vidPlay(v); else if (!v.paused) v.pause();
   });
-}, { threshold: [0, 0.5] }) : null;
+}, { threshold: [0, 0.15, 0.5], rootMargin: '120px 0px' }) : null;
 function observeVideos() {
+  VIDS = VIDS.filter(function (v) { if (v.isConnected) return true; if (vio) vio.unobserve(v); return false; });
   $$('video[data-src]').forEach(function (v) {
-    if (v.__obs) return; v.__obs = true;
-    if (vio) vio.observe(v); else { v.src = v.getAttribute('data-src'); if (!REDUCED) v.play(); }
+    if (v.__obs) return; v.__obs = true; VIDS.push(v);
+    v.muted = true; v.playsInline = true; v.loop = true;
+    v.addEventListener('ended', function () { v.currentTime = 0; vidPlay(v); });
+    v.addEventListener('pause', function () { if (v.__want && !document.hidden) setTimeout(function () { vidPlay(v); }, 250); });
+    v.addEventListener('error', function () { if ((v.__err = (v.__err || 0) + 1) <= 3) setTimeout(function () { v.load(); vidPlay(v); }, 1500 * v.__err); });
+    if (vio) vio.observe(v); else { v.__want = true; vidPlay(v); }
   });
 }
-document.addEventListener('visibilitychange', function () { if (document.hidden) $$('video').forEach(function (v) { v.pause(); }); });
+function resumeVideos() { VIDS.forEach(vidPlay); }
+// vigia: retoma vídeo pausado e destrava vídeo congelado
+setInterval(function () {
+  if (document.hidden) return;
+  VIDS.forEach(function (v) {
+    if (!v.__want || !v.isConnected) return;
+    if (v.paused) return vidPlay(v);
+    if (v.currentTime === v.__last && v.readyState < 3) {
+      if ((v.__stuck = (v.__stuck || 0) + 1) >= 4) { var t = v.currentTime; v.__stuck = 0; v.load(); try { v.currentTime = t; } catch (e) {} vidPlay(v); }
+    } else v.__stuck = 0;
+    v.__last = v.currentTime;
+  });
+}, 1000);
+document.addEventListener('visibilitychange', function () { if (document.hidden) VIDS.forEach(function (v) { v.pause(); }); else resumeVideos(); });
+addEventListener('pageshow', resumeVideos);
+addEventListener('focus', resumeVideos);
+['touchend', 'click', 'keydown'].forEach(function (ev) { document.addEventListener(ev, resumeVideos, { passive: true }); });
 
 /* ================= NÚMEROS QUE SOBEM ================= */
 function countUp() {
