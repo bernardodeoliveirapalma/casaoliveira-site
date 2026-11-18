@@ -211,6 +211,108 @@ footer .t-label{color:var(--verde-esc)}
 .dock .wa svg{width:20px;height:20px}
 @media (prefers-reduced-motion: reduce){.dock{transition:none}}
 
+/* ================= COMPUTADOR ================= */
+.topnav{display:none}
+@media (min-width:1024px){
+  :root{--cw:1200px;--gut:56px;--side:max(var(--gut),calc((100vw - var(--cw)) / 2 + var(--gut)))}
+  main{max-width:none;padding-bottom:0;position:relative}
+  .wrap{max-width:var(--cw);margin-left:auto;margin-right:auto;padding:0 var(--gut)}
+  .sec{margin-top:144px}
+  h2[id]{scroll-margin-top:56px}
+  .t-h1{font-size:clamp(52px,4.6vw,72px);line-height:1.04;letter-spacing:-.01em}
+  .t-h2{font-size:clamp(38px,3.3vw,50px);line-height:1.08}
+  .t-h3{font-size:26px}
+  .t-body{font-size:16px;line-height:1.75}
+  .eyebrow{margin-bottom:20px}
+  .lead{margin-top:20px}
+  .sec .lead{max-width:720px}
+  .btn{width:auto;padding:0 44px;height:58px}
+
+  /* topo */
+  .topnav{display:flex;align-items:center;height:104px;max-width:var(--cw);margin:0 auto;padding:0 var(--gut)}
+  .topnav-logo img{width:176px;height:auto}
+  .topnav-links{display:flex;gap:40px;margin-left:auto;margin-right:120px}
+  .topnav-links a{font-size:11px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--marrom);padding:8px 0;border-bottom:1px solid transparent;transition:border-color .25s,color .25s}
+  .topnav-links a:hover{color:var(--verde-esc);border-color:var(--verde)}
+  .lang{position:absolute;top:30px;right:var(--side);padding:0;z-index:2}
+
+  /* hero: texto à esquerda, vídeo à direita */
+  .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-rows:1fr auto auto auto auto 1fr;column-gap:96px;text-align:left;padding-top:24px}
+  .hero .logo{display:none}
+  .hero .media{grid-column:2;grid-row:1 / 7;margin:0;aspect-ratio:4/5;max-height:calc(100vh - 150px);min-height:520px;width:100%;border-radius:28px}
+  .hero h1,.hero .lead,.hero .btn,.hero .t-small{grid-column:1;justify-self:start}
+  .hero h1{grid-row:2;margin-top:0;max-width:540px}
+  .hero .lead{grid-row:3} .hero .btn{grid-row:4} .hero .t-small{grid-row:5}
+  .hero .lead{max-width:460px;margin-top:28px}
+  .hero .btn{margin-top:40px}
+  .hero .t-small{margin-top:16px;align-self:start}
+  .hero .chip{left:20px;bottom:20px}
+
+  /* números lado a lado */
+  .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+  .stat{height:auto;border-bottom:0;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:14px;padding:44px 40px}
+  .stat:first-child{padding-left:0}
+  .stat + .stat{border-left:1px solid var(--linha)}
+  .stat b{font-size:clamp(40px,4.1vw,60px)}
+  .stat span{text-align:left;font-size:14px;max-width:260px}
+
+  /* formulário centralizado, opções em duas colunas */
+  .quiz{max-width:920px;margin:144px auto 0;padding:72px 88px;border-radius:32px;scroll-margin-top:48px}
+  .quiz .t-h3{font-size:30px;margin-top:36px}
+  .opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:24px}
+  .opt{height:64px}
+  .quiz .btn{width:100%}
+  .summary{padding:20px 24px}
+
+  /* parcerias: três cartões à vista */
+  .trilho{gap:24px;margin-top:48px;padding:0 var(--side) 8px;scroll-padding-left:var(--side)}
+  .card{flex:0 0 calc((min(100vw,var(--cw)) - var(--gut) * 2 - 48px) / 3);max-width:none}
+  .card-body{padding:32px}
+  .card .btn{width:100%;padding:0 20px;letter-spacing:.16em}
+  .car-nav{max-width:var(--cw);margin:28px auto 0;padding:0 var(--gut);justify-content:flex-end;gap:12px}
+  .car-nav .dots{display:none}
+  .more{margin-top:56px}
+
+  /* passos em três colunas */
+  .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:56px;margin-top:56px}
+  .steps li{display:flex;flex-direction:column;gap:24px}
+  .steps li div{padding-top:0;gap:10px}
+  .num{width:48px;height:48px;font-size:20px}
+
+  /* lista reservada em uma faixa */
+  .box{max-width:calc(var(--cw) - var(--gut) * 2);margin:144px auto 0;padding:64px 72px;border-radius:32px;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:72px;align-items:center}
+  .box > :not(.btn){grid-column:1}
+  .box .btn{grid-column:2;grid-row:1 / span 3;margin:0}
+  .box .lead{max-width:560px}
+
+  /* quem conduz: foto e texto lado a lado */
+  .quem{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:1fr auto auto auto auto 1fr;column-gap:96px}
+  .quem .foto{grid-column:1;grid-row:1 / 7;margin:0;aspect-ratio:4/5;border-radius:28px}
+  .quem > :not(.foto){grid-column:2}
+  .quem .eyebrow{grid-row:2} .quem h2{grid-row:3} .quem .t-body{grid-row:4} .quem .motto{grid-row:5}
+  .quem .t-body{margin-top:28px;max-width:500px}
+  .quem .motto{margin-top:24px}
+
+  .oliveira{max-width:820px;margin-left:auto;margin-right:auto}
+  .oliveira .t-body{max-width:640px;margin-left:auto;margin-right:auto}
+
+  .close{max-width:calc(var(--cw) - var(--gut) * 2);margin:144px auto 0;padding:104px 96px;border-radius:32px}
+  .close img{width:220px}
+  .close .t-h2{max-width:680px}
+  .close .btn{margin-top:40px}
+
+  footer{max-width:var(--cw);margin:0 auto;padding:56px var(--gut) 64px;flex-direction:row;justify-content:space-between;align-items:center}
+  footer nav{order:2}
+
+  /* barra fixa vira botões flutuantes no canto */
+  .dock{left:auto;right:32px;bottom:32px;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;transform:translateY(160%)}
+  .dock-in{padding:0;gap:10px;align-items:center}
+  .dock .btn{box-shadow:0 10px 30px rgba(17,31,14,.18)}
+  .dock .wa{background:var(--creme);box-shadow:0 10px 30px rgba(17,31,14,.12)}
+}
+@media (min-width:1024px) and (max-height:760px){.hero .media{min-height:440px}}
+@media (min-width:1024px) and (max-width:1279px){.card{flex-basis:calc((100vw - var(--gut) * 2 - 24px) / 2.3)}.hero{column-gap:64px}.quem{column-gap:64px}}
+
 /* ================= ABERTURA ================= */
 .intro-ov{display:none;position:fixed;inset:0;z-index:100;cursor:pointer;background:#3E4A36}
 html.intro{overflow:hidden}
@@ -226,6 +328,15 @@ html.intro .intro-ov{display:block}
 <div class="intro-ov" id="intro" aria-hidden="true"><canvas id="intro-cv"></canvas><button class="intro-som" id="intro-som" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><span data-t="introSom">Som</span></button></div>
 <main>
 
+  <nav class="topnav" data-t-aria="navAria" aria-label="Menu">
+    <a class="topnav-logo" href="#"><img src="assets/logo.png" width="440" height="117" alt="Casa Oliveira"></a>
+    <div class="topnav-links">
+      <a href="#curadoria" data-go-quiz data-t="navQuiz">Curadoria</a>
+      <a href="#vitrine" data-t="navVit">Parcerias</a>
+      <a href="#como" data-t="navComo">Como funciona</a>
+      <a href="#quem" data-t="navQuem">Quem somos</a>
+    </div>
+  </nav>
   <div class="lang" role="group" aria-label="Idioma / Language">
     <button type="button" data-lang="pt" aria-pressed="true" aria-label="Português">PT</button>
     <button type="button" data-lang="en" aria-pressed="false" aria-label="English">EN</button>
@@ -366,6 +477,11 @@ var D = {
   introL1: ['Curadoria imobiliária', 'Real estate curation'],
   introL3: ['De família para família', 'From family to family'],
   introSom: ['Som', 'Sound'],
+  navAria: ['Menu', 'Menu'],
+  navQuiz: ['Curadoria', 'Curation'],
+  navVit: ['Parcerias', 'Partners'],
+  navComo: ['Como funciona', 'How it works'],
+  navQuem: ['Quem somos', 'About us'],
   badge: ['Ane & Bernardo, mãe e filho', 'Ane & Bernardo, mother and son'],
   h1a: ['Você não precisa falar com ', "You don't need to talk to "],
   h1b: ['dez corretores', 'ten brokers'],
@@ -712,13 +828,14 @@ function renderCards() {
   updateDots();
 }
 var trilho = $('#trilho');
-function cardStep() { var c = $('[data-card]', trilho); return c ? c.offsetWidth + 12 : 1; }
+function cardStep() { var c = $('[data-card]', trilho); var g = parseFloat(getComputedStyle(trilho).columnGap) || 12; return c ? c.offsetWidth + g : 1; }
+function atEnd() { return trilho.scrollLeft >= trilho.scrollWidth - trilho.clientWidth - 4; }
 function currentCard() { return Math.max(0, Math.min(CARDS.length - 1, Math.round(trilho.scrollLeft / cardStep()))); }
 function goCard(i) { trilho.scrollTo({ left: i * cardStep(), behavior: REDUCED ? 'auto' : 'smooth' }); }
 function updateDots() {
   var i = currentCard();
   $$('[data-dot]').forEach(function (d, j) { d.setAttribute('aria-current', j === i ? 'true' : 'false'); });
-  $('#prev').disabled = i === 0; $('#next').disabled = i === CARDS.length - 1;
+  $('#prev').disabled = trilho.scrollLeft < 4; $('#next').disabled = atEnd();
 }
 var ticking = false;
 trilho.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(function () { updateDots(); ticking = false; }); } }, { passive: true });
