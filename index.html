@@ -504,7 +504,7 @@ var D = {
   namePh: ['Seu nome', 'Your name'],
   phoneLabel: ['Seu WhatsApp, com DDD (se quiser)', 'Your WhatsApp, with country code (optional)'],
   phonePh: ['48 99999 9999', '+1 555 123 4567'],
-  optIn: ['Quero receber novidades da Casa Oliveira pelo WhatsApp. Posso sair quando quiser.', 'Send me Casa Oliveira news on WhatsApp. I can opt out anytime.'],
+  optIn: ['Não quero receber oportunidades de investimento, novidades e convites para eventos da Casa Oliveira pelo WhatsApp.', 'I do not want to receive investment opportunities, news or event invitations from Casa Oliveira on WhatsApp.'],
   send: ['Enviar para Ane & Bernardo', 'Send to Ane & Bernardo'],
   sendNote: ['Abre o WhatsApp com suas respostas prontas. Quem responde somos nós, não um robô.', "Opens WhatsApp with your answers ready. You'll hear from us, not a bot."],
   redo: ['Refazer respostas', 'Start over'],
@@ -672,7 +672,7 @@ try {
   if (saved === 'pt' || saved === 'en') LANG = saved;
   else if (String(navigator.language || '').slice(0, 2).toLowerCase() === 'en') LANG = 'en';
 } catch (e) {}
-var Q = { step: 0, a1: null, a2: null, a3: null, name: '', ref: '', phone: '', optin: false };
+var Q = { step: 0, a1: null, a2: null, a3: null, name: '', ref: '', phone: '', naoQuero: false };
 var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 var STATS_DONE = !('IntersectionObserver' in window);
 
@@ -780,7 +780,7 @@ function saveLead() {
         p_nome: Q.name.trim().slice(0, 120) || (LANG === 'en' ? 'Visitor (site)' : 'Visitante do site'),
         p_whatsapp: digits || null, p_idioma: LANG,
         p_origem: SOURCE === 'ig' ? 'Instagram' : SOURCE === 'ad' ? 'Anúncio' : 'Site',
-        p_utm: utm, p_respostas: resp, p_aceita_whatsapp: !!(Q.optin && digits)
+        p_utm: utm, p_respostas: resp, p_aceita_whatsapp: !!(!Q.naoQuero && digits)
       })
     }).catch(function () {});
   } catch (e) {}
@@ -804,7 +804,7 @@ function renderQuiz(focus) {
       (askRef() ? '<label class="field">' + esc(refLabel) + '<input id="f-ref" type="text" placeholder="' + esc(refPh) + '" value="' + esc(Q.ref) + '"></label>' : '') +
       '<label class="field">' + esc(T('nameLabel')) + '<input id="f-name" type="text" autocomplete="given-name" placeholder="' + esc(T('namePh')) + '" value="' + esc(Q.name) + '"></label>' +
       '<label class="field">' + esc(T('phoneLabel')) + '<input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="' + esc(T('phonePh')) + '" value="' + esc(Q.phone) + '"></label>' +
-      '<label class="optin"><input id="f-optin" type="checkbox"' + (Q.optin ? ' checked' : '') + '><span>' + esc(T('optIn')) + '</span></label>' +
+      '<label class="optin"><input id="f-optin" type="checkbox"' + (Q.naoQuero ? ' checked' : '') + '><span>' + esc(T('optIn')) + '</span></label>' +
       '<a class="btn btn-creme" id="f-send" href="' + wa(message()) + '" target="_blank" rel="noopener">' + esc(T('send')) +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
       '<p class="t-small note">' + esc(T('sendNote')) + '</p>' +
@@ -833,7 +833,7 @@ document.addEventListener('input', function (e) {
   if (e.target.id === 'f-name') Q.name = e.target.value;
   else if (e.target.id === 'f-ref') Q.ref = e.target.value;
   else if (e.target.id === 'f-phone') { Q.phone = e.target.value; return; }
-  else if (e.target.id === 'f-optin') { Q.optin = e.target.checked; return; }
+  else if (e.target.id === 'f-optin') { Q.naoQuero = e.target.checked; return; }
   else return;
   var send = $('#f-send'); if (send) send.href = wa(message());
 });
