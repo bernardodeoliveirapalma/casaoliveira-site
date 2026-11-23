@@ -136,6 +136,8 @@ main{max-width:520px;margin:0 auto;padding-bottom:96px}
 .summary dt{color:var(--nevoa)} .summary dd{margin:0;font-weight:400;text-align:right}
 .field{margin-top:24px;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.5;font-weight:400}
 .field input{height:56px;padding:0 20px;border-radius:16px;border:1px solid var(--verde-linha);background:var(--creme);color:var(--verde-esc);font:300 16px var(--sans)}
+.bday{display:grid;grid-template-columns:1fr 1.4fr;gap:12px}
+.bday select{width:100%;height:56px;padding:0 40px 0 20px;border-radius:16px;border:1px solid var(--verde-linha);background:var(--creme) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233E4A36' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center/18px;color:var(--verde-esc);font:300 16px var(--sans);-webkit-appearance:none;appearance:none}
 .quiz .btn{margin-top:16px}
 .optin{margin-top:16px;display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.5;cursor:pointer}
 .optin input{flex:none;width:22px;height:22px;margin:0;accent-color:var(--creme)}
@@ -504,6 +506,9 @@ var D = {
   namePh: ['Seu nome', 'Your name'],
   phoneLabel: ['Seu WhatsApp, com DDD (se quiser)', 'Your WhatsApp, with country code (optional)'],
   phonePh: ['48 99999 9999', '+1 555 123 4567'],
+  bdayLabel: ['Seu aniversário, dia e mês (se quiser)', 'Your birthday, day and month (optional)'],
+  bdayDay: ['Dia', 'Day'],
+  bdayMonth: ['Mês', 'Month'],
   optIn: ['Não quero receber oportunidades de investimento, novidades e convites para eventos da Casa Oliveira pelo WhatsApp.', 'I do not want to receive investment opportunities, news or event invitations from Casa Oliveira on WhatsApp.'],
   send: ['Enviar para Ane & Bernardo', 'Send to Ane & Bernardo'],
   sendNote: ['Abre o WhatsApp com suas respostas prontas. Quem responde somos nós, não um robô.', "Opens WhatsApp with your answers ready. You'll hear from us, not a bot."],
@@ -672,7 +677,15 @@ try {
   if (saved === 'pt' || saved === 'en') LANG = saved;
   else if (String(navigator.language || '').slice(0, 2).toLowerCase() === 'en') LANG = 'en';
 } catch (e) {}
-var Q = { step: 0, a1: null, a2: null, a3: null, name: '', ref: '', phone: '', naoQuero: false };
+var Q = { step: 0, a1: null, a2: null, a3: null, name: '', ref: '', phone: '', naoQuero: false, dia: '', mes: '' };
+var MESES = [['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'],
+  ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']];
+/* aniversário no formato MM-DD, ou null se faltar dia ou mês ou a data não existir */
+function bday() {
+  var d = +Q.dia, m = +Q.mes;
+  if (!d || !m || d > [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1]) return null;
+  return (m < 10 ? '0' : '') + m + '-' + (d < 10 ? '0' : '') + d;
+}
 var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 var STATS_DONE = !('IntersectionObserver' in window);
 
@@ -760,7 +773,7 @@ function saveLead() {
   var digits = String(Q.phone || '').replace(/\D/g, '');
   if (digits.length === 10 || digits.length === 11) digits = '55' + digits;
   if (digits.length < 10 || digits.length > 15) digits = '';
-  var assinatura = [Q.a1, Q.a2, Q.a3, Q.name.trim(), digits].join('|');
+  var assinatura = [Q.a1, Q.a2, Q.a3, Q.name.trim(), digits, bday()].join('|');
   if (LEAD_SENT === assinatura) return;
   LEAD_SENT = assinatura;
   var lang = LANG, rows; LANG = 'pt'; rows = summaryRows(); LANG = lang;
@@ -780,7 +793,8 @@ function saveLead() {
         p_nome: Q.name.trim().slice(0, 120) || (LANG === 'en' ? 'Visitor (site)' : 'Visitante do site'),
         p_whatsapp: digits || null, p_idioma: LANG,
         p_origem: SOURCE === 'ig' ? 'Instagram' : SOURCE === 'ad' ? 'Anúncio' : 'Site',
-        p_utm: utm, p_respostas: resp, p_aceita_whatsapp: !!(!Q.naoQuero && digits)
+        p_utm: utm, p_respostas: resp, p_aceita_whatsapp: !!(!Q.naoQuero && digits),
+        p_aniversario: bday()
       })
     }).catch(function () {});
   } catch (e) {}
@@ -804,6 +818,12 @@ function renderQuiz(focus) {
       (askRef() ? '<label class="field">' + esc(refLabel) + '<input id="f-ref" type="text" placeholder="' + esc(refPh) + '" value="' + esc(Q.ref) + '"></label>' : '') +
       '<label class="field">' + esc(T('nameLabel')) + '<input id="f-name" type="text" autocomplete="given-name" placeholder="' + esc(T('namePh')) + '" value="' + esc(Q.name) + '"></label>' +
       '<label class="field">' + esc(T('phoneLabel')) + '<input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="' + esc(T('phonePh')) + '" value="' + esc(Q.phone) + '"></label>' +
+      '<div class="field"><span id="bday-l">' + esc(T('bdayLabel')) + '</span><div class="bday">' +
+        '<select id="f-dia" aria-label="' + esc(T('bdayDay')) + '"><option value="">' + esc(T('bdayDay')) + '</option>' +
+          Array.apply(null, Array(31)).map(function (_, i) { return '<option value="' + (i + 1) + '"' + (+Q.dia === i + 1 ? ' selected' : '') + '>' + (i + 1) + '</option>'; }).join('') + '</select>' +
+        '<select id="f-mes" aria-label="' + esc(T('bdayMonth')) + '"><option value="">' + esc(T('bdayMonth')) + '</option>' +
+          MESES[L()].map(function (n, i) { return '<option value="' + (i + 1) + '"' + (+Q.mes === i + 1 ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('') + '</select>' +
+      '</div></div>' +
       '<label class="optin"><input id="f-optin" type="checkbox"' + (Q.naoQuero ? ' checked' : '') + '><span>' + esc(T('optIn')) + '</span></label>' +
       '<a class="btn btn-creme" id="f-send" href="' + wa(message()) + '" target="_blank" rel="noopener">' + esc(T('send')) +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
@@ -824,7 +844,7 @@ document.addEventListener('click', function (e) {
     renderQuiz(true); return;
   }
   if (e.target.closest('[data-back]')) { Q.step = Math.max(0, Q.step - 1); renderQuiz(true); return; }
-  if (e.target.closest('[data-restart]')) { Q = { step: 0, a1: null, a2: null, a3: null, name: Q.name, ref: '' }; renderQuiz(true); return; }
+  if (e.target.closest('[data-restart]')) { Q = { step: 0, a1: null, a2: null, a3: null, name: Q.name, ref: '', phone: Q.phone, naoQuero: Q.naoQuero, dia: Q.dia, mes: Q.mes }; renderQuiz(true); return; }
   if (e.target.closest('#f-send')) { track('quiz_enviado', { objetivo: Q.a1, interesse: Q.a2, etapa: Q.a3 }); saveLead(); return; }
   var w = e.target.closest('[data-track]');
   if (w) track(w.getAttribute('data-track'));
@@ -834,6 +854,8 @@ document.addEventListener('input', function (e) {
   else if (e.target.id === 'f-ref') Q.ref = e.target.value;
   else if (e.target.id === 'f-phone') { Q.phone = e.target.value; return; }
   else if (e.target.id === 'f-optin') { Q.naoQuero = e.target.checked; return; }
+  else if (e.target.id === 'f-dia') { Q.dia = e.target.value; return; }
+  else if (e.target.id === 'f-mes') { Q.mes = e.target.value; return; }
   else return;
   var send = $('#f-send'); if (send) send.href = wa(message());
 });
